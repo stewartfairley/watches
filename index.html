@@ -4,73 +4,150 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>S2 Watch Catalog</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .watch-img {
-      width: 100%;
-      height: auto;
-      cursor: pointer;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .watch-cell {
-      padding: 15px;
+    .watch-card {
       position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
     }
-    .hover-card {
-      display: none;
+    .watch-card:hover .hover-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .hover-overlay {
       position: absolute;
       top: 0;
       left: 0;
-      z-index: 10;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      width: max-content;
-      max-width: 280px;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      color: #000;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      overflow-y: auto;
       font-size: 0.9rem;
     }
-    .watch-cell:hover .hover-card {
-      display: block;
-    }
-    .hover-card div {
-      margin-bottom: 4px;
-    }
-    .hover-card strong {
-      display: inline-block;
-      width: 120px;
+    img.watch-img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
     }
   </style>
 </head>
-<body>
-  <div class="container mt-4">
-    <h1 class="text-center mb-4">S2 Watch Catalog</h1>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+<body class="bg-light">
+  <div class="container py-4">
+    <h1 class="mb-4 text-center">S2 Watch Catalog</h1>
 
-      <!-- === BEGIN WATCH CARD === -->
-      <div class="col watch-cell">
-        <img src="/watches/images/pulsar.jpg" alt="Pulsar V552-8159" class="watch-img">
-        <div class="text-center fw-bold mt-2">Pulsar</div>
-        <div class="hover-card">
-          <div><strong>Make:</strong> Pulsar</div>
-          <div><strong>Model/Reference:</strong> V552-8159</div>
-          <div><strong>Type:</strong> Dress</div>
-          <div><strong>Movement:</strong> Quartz (V552)</div>
-          <div><strong>Lug Width:</strong> 18mm</div>
-          <div><strong>Made In:</strong> Japan</div>
-          <div><strong>Year Made:</strong> April, 1982</div>
-          <div><strong>Year Acquired:</strong> 2025</div>
-          <div><strong>Notes:</strong> Gift from Z&amp;G from thrifting. Added new battery (SR920SW/371), polished crystal, new strap</div>
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <select class="form-select" id="movementFilter">
+          <option value="">All Movements</option>
+          <option value="Automatic">Automatic</option>
+          <option value="Quartz">Quartz</option>
+          <option value="Manual">Manual</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" id="countryFilter">
+          <option value="">All Countries</option>
+          <option value="Japan">Japan</option>
+          <option value="USA">USA</option>
+          <option value="Sweden">Sweden</option>
+          <option value="Germany">Germany</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Watch Grid -->
+    <div class="row" id="watchGrid">
+
+      <!-- BEGIN WATCH CARD TEMPLATE -->
+      <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="Japan">
+        <div class="card watch-card">
+          <img src="images/pulsar.jpg" class="card-img-top watch-img" alt="Pulsar" />
+          <div class="hover-overlay">
+            <strong>Brand:</strong> Pulsar<br>
+            <strong>Model:</strong> G10<br>
+            <strong>Movement:</strong> Quartz<br>
+            <strong>Country Made:</strong> Japan<br>
+            <strong>Lug Width:</strong> 20mm<br>
+            <strong>Year Made:</strong> 1992<br>
+            <strong>Year Acquired:</strong> 2024
+          </div>
         </div>
       </div>
-      <!-- === END WATCH CARD === -->
+      <!-- END WATCH CARD TEMPLATE -->
+
+      <!-- Dummy watches for demo -->
+      <div class="col-md-2 mb-4 watch-item" data-movement="Automatic" data-country="Germany">
+        <div class="card watch-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Automatic_watch.jpg/640px-Automatic_watch.jpg" class="card-img-top watch-img" alt="Auto Watch" />
+          <div class="hover-overlay">
+            <strong>Brand:</strong> Nomos<br>
+            <strong>Model:</strong> Tangente<br>
+            <strong>Movement:</strong> Automatic<br>
+            <strong>Country Made:</strong> Germany<br>
+            <strong>Lug Width:</strong> 20mm<br>
+            <strong>Year Made:</strong> 2021<br>
+            <strong>Year Acquired:</strong> 2022
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 mb-4 watch-item" data-movement="Manual" data-country="USA">
+        <div class="card watch-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Vintage_Elgin_wristwatch.jpg/640px-Vintage_Elgin_wristwatch.jpg" class="card-img-top watch-img" alt="Vintage Watch" />
+          <div class="hover-overlay">
+            <strong>Brand:</strong> Elgin<br>
+            <strong>Model:</strong> Field Watch<br>
+            <strong>Movement:</strong> Manual<br>
+            <strong>Country Made:</strong> USA<br>
+            <strong>Lug Width:</strong> 18mm<br>
+            <strong>Year Made:</strong> 1954<br>
+            <strong>Year Acquired:</strong> 2021
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 mb-4 watch-item" data-movement="Automatic" data-country="Sweden">
+        <div class="card watch-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Automatic_watch_exploded_view.jpg/640px-Automatic_watch_exploded_view.jpg" class="card-img-top watch-img" alt="Swedish Watch" />
+          <div class="hover-overlay">
+            <strong>Brand:</strong> Halda<br>
+            <strong>Model:</strong> Space Discovery<br>
+            <strong>Movement:</strong> Automatic<br>
+            <strong>Country Made:</strong> Sweden<br>
+            <strong>Lug Width:</strong> 22mm<br>
+            <strong>Year Made:</strong> 2020<br>
+            <strong>Year Acquired:</strong> 2023
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    $(function () {
+      $('#movementFilter, #countryFilter').on('change', function () {
+        const movement = $('#movementFilter').val();
+        const country = $('#countryFilter').val();
+
+        $('.watch-item').each(function () {
+          const matchMovement = !movement || $(this).data('movement') === movement;
+          const matchCountry = !country || $(this).data('country') === country;
+          $(this).toggle(matchMovement && matchCountry);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
