@@ -9,10 +9,20 @@
     rel="stylesheet"
   />
   <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    }
+    h1 {
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
     .watch-card {
       position: relative;
       overflow: hidden;
       transition: transform 0.2s;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .watch-card:hover .hover-overlay {
       opacity: 1;
@@ -24,7 +34,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.98);
       color: #000;
       padding: 1rem;
       opacity: 0;
@@ -38,31 +48,36 @@
       object-fit: cover;
       aspect-ratio: 1 / 1;
     }
+    .filters {
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .btn-clear {
+      background-color: #ddd;
+      border: none;
+    }
   </style>
 </head>
-<body class="bg-light">
+<body>
   <div class="container py-4">
-    <h1 class="mb-4 text-center">S2 Watch Catalog</h1>
+    <h1 class="text-center">S2 Watch Catalog</h1>
 
     <!-- Filters -->
-    <div class="row mb-4">
-      <div class="col-md-3">
-        <select class="form-select" id="movementFilter">
-          <option value="">All Movements</option>
-          <option value="Automatic">Automatic</option>
-          <option value="Quartz">Quartz</option>
-          <option value="Manual">Manual</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <select class="form-select" id="countryFilter">
-          <option value="">All Countries</option>
-          <option value="Japan">Japan</option>
-          <option value="USA">USA</option>
-          <option value="Sweden">Sweden</option>
-          <option value="Germany">Germany</option>
-        </select>
-      </div>
+    <div class="d-flex flex-wrap justify-content-center filters">
+      <select class="form-select w-auto" id="movementFilter">
+        <option value="">All Movements</option>
+        <option value="Automatic">Automatic</option>
+        <option value="Quartz">Quartz</option>
+        <option value="Manual">Manual</option>
+      </select>
+      <select class="form-select w-auto" id="countryFilter">
+        <option value="">All Countries</option>
+        <option value="Japan">Japan</option>
+        <option value="USA">USA</option>
+        <option value="Sweden">Sweden</option>
+        <option value="Germany">Germany</option>
+      </select>
+      <button class="btn btn-clear" id="clearFilters">Clear Filters</button>
     </div>
 
     <!-- Watch Grid -->
@@ -79,57 +94,62 @@
             <strong>Country Made:</strong> Japan<br>
             <strong>Lug Width:</strong> 20mm<br>
             <strong>Year Made:</strong> 1992<br>
-            <strong>Year Acquired:</strong> 2024
+            <strong>Year Acquired:</strong> 2024<br>
+            <strong>Notes:</strong> Issued to British military in 1992
           </div>
         </div>
       </div>
       <!-- END WATCH CARD TEMPLATE -->
 
-      <!-- Dummy watches for demo -->
+      <!-- Example Watch Entries -->
       <div class="col-md-2 mb-4 watch-item" data-movement="Automatic" data-country="Germany">
         <div class="card watch-card">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Automatic_watch.jpg/640px-Automatic_watch.jpg" class="card-img-top watch-img" alt="Auto Watch" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Glashuette_Original_Senator_Excellence_Panorama_Date_Moon_Phase.jpg/600px-Glashuette_Original_Senator_Excellence_Panorama_Date_Moon_Phase.jpg" class="card-img-top watch-img" alt="German Watch" />
           <div class="hover-overlay">
-            <strong>Brand:</strong> Nomos<br>
-            <strong>Model:</strong> Tangente<br>
+            <strong>Brand:</strong> Glashütte Original<br>
+            <strong>Model:</strong> Senator<br>
             <strong>Movement:</strong> Automatic<br>
             <strong>Country Made:</strong> Germany<br>
             <strong>Lug Width:</strong> 20mm<br>
-            <strong>Year Made:</strong> 2021<br>
-            <strong>Year Acquired:</strong> 2022
+            <strong>Year Made:</strong> 2020<br>
+            <strong>Year Acquired:</strong> 2021<br>
+            <strong>Notes:</strong> Elegant dress watch with moon phase complication
           </div>
         </div>
       </div>
 
-      <div class="col-md-2 mb-4 watch-item" data-movement="Manual" data-country="USA">
+      <div class="col-md-2 mb-4 watch-item" data-movement="Manual" data-country="Sweden">
         <div class="card watch-card">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Vintage_Elgin_wristwatch.jpg/640px-Vintage_Elgin_wristwatch.jpg" class="card-img-top watch-img" alt="Vintage Watch" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Halios_Seaforth.jpg/600px-Halios_Seaforth.jpg" class="card-img-top watch-img" alt="Swedish Watch" />
           <div class="hover-overlay">
-            <strong>Brand:</strong> Elgin<br>
-            <strong>Model:</strong> Field Watch<br>
+            <strong>Brand:</strong> Halios<br>
+            <strong>Model:</strong> Seaforth<br>
             <strong>Movement:</strong> Manual<br>
+            <strong>Country Made:</strong> Sweden<br>
+            <strong>Lug Width:</strong> 20mm<br>
+            <strong>Year Made:</strong> 2018<br>
+            <strong>Year Acquired:</strong> 2019<br>
+            <strong>Notes:</strong> Microbrand dive watch with manual wind movement
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="USA">
+        <div class="card watch-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Timex_Q_Timex_Reissue.jpg/600px-Timex_Q_Timex_Reissue.jpg" class="card-img-top watch-img" alt="Timex Watch" />
+          <div class="hover-overlay">
+            <strong>Brand:</strong> Timex<br>
+            <strong>Model:</strong> Q Timex Reissue<br>
+            <strong>Movement:</strong> Quartz<br>
             <strong>Country Made:</strong> USA<br>
             <strong>Lug Width:</strong> 18mm<br>
-            <strong>Year Made:</strong> 1954<br>
-            <strong>Year Acquired:</strong> 2021
+            <strong>Year Made:</strong> 2022<br>
+            <strong>Year Acquired:</strong> 2023<br>
+            <strong>Notes:</strong> Modern reissue of classic 1970s model
           </div>
         </div>
       </div>
-
-      <div class="col-md-2 mb-4 watch-item" data-movement="Automatic" data-country="Sweden">
-        <div class="card watch-card">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Automatic_watch_exploded_view.jpg/640px-Automatic_watch_exploded_view.jpg" class="card-img-top watch-img" alt="Swedish Watch" />
-          <div class="hover-overlay">
-            <strong>Brand:</strong> Halda<br>
-            <strong>Model:</strong> Space Discovery<br>
-            <strong>Movement:</strong> Automatic<br>
-            <strong>Country Made:</strong> Sweden<br>
-            <strong>Lug Width:</strong> 22mm<br>
-            <strong>Year Made:</strong> 2020<br>
-            <strong>Year Acquired:</strong> 2023
-          </div>
-        </div>
-      </div>
+      <!-- End Example Watch Entries -->
 
     </div>
   </div>
@@ -137,7 +157,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
     $(function () {
-      $('#movementFilter, #countryFilter').on('change', function () {
+      function filterWatches() {
         const movement = $('#movementFilter').val();
         const country = $('#countryFilter').val();
 
@@ -146,6 +166,13 @@
           const matchCountry = !country || $(this).data('country') === country;
           $(this).toggle(matchMovement && matchCountry);
         });
+      }
+
+      $('#movementFilter, #countryFilter').on('change', filterWatches);
+
+      $('#clearFilters').on('click', function () {
+        $('#movementFilter, #countryFilter').val('');
+        filterWatches();
       });
     });
   </script>
