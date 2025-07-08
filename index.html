@@ -21,32 +21,31 @@
       position: relative;
       overflow: hidden;
       transition: transform 0.2s;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      background: white;
     }
-    .watch-card:hover .hover-overlay {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .hover-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.98);
-      color: #000;
-      padding: 1rem;
-      opacity: 0;
-      transition: opacity 0.3s;
-      overflow-y: auto;
-      font-size: 0.9rem;
+    .watch-card:hover {
+      transform: scale(1.03);
     }
     img.watch-img {
       width: 100%;
       height: auto;
       object-fit: cover;
       aspect-ratio: 1 / 1;
+      border-radius: 16px 16px 0 0;
+    }
+    .tooltip-box {
+      display: none;
+      position: absolute;
+      z-index: 999;
+      background: #fff;
+      color: #000;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      width: 220px;
+      font-size: 0.9rem;
     }
     .filters {
       gap: 1rem;
@@ -80,76 +79,38 @@
       <button class="btn btn-clear" id="clearFilters">Clear Filters</button>
     </div>
 
+    <!-- Tooltip -->
+    <div id="tooltip" class="tooltip-box"></div>
+
     <!-- Watch Grid -->
     <div class="row" id="watchGrid">
 
       <!-- BEGIN WATCH CARD TEMPLATE -->
       <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="Japan">
-        <div class="card watch-card">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Pulsar<br><strong>Model:</strong> G10<br><strong>Movement:</strong> Quartz<br><strong>Country Made:</strong> Japan<br><strong>Lug Width:</strong> 20mm<br><strong>Year Made:</strong> 1992<br><strong>Year Acquired:</strong> 2024<br><strong>Notes:</strong> Issued to British military in 1992">
           <img src="images/pulsar.jpg" class="card-img-top watch-img" alt="Pulsar" />
-          <div class="hover-overlay">
-            <strong>Brand:</strong> Pulsar<br>
-            <strong>Model:</strong> G10<br>
-            <strong>Movement:</strong> Quartz<br>
-            <strong>Country Made:</strong> Japan<br>
-            <strong>Lug Width:</strong> 20mm<br>
-            <strong>Year Made:</strong> 1992<br>
-            <strong>Year Acquired:</strong> 2024<br>
-            <strong>Notes:</strong> Issued to British military in 1992
-          </div>
         </div>
       </div>
       <!-- END WATCH CARD TEMPLATE -->
 
       <!-- Example Watch Entries -->
       <div class="col-md-2 mb-4 watch-item" data-movement="Automatic" data-country="Germany">
-        <div class="card watch-card">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Glashütte Original<br><strong>Model:</strong> Senator<br><strong>Movement:</strong> Automatic<br><strong>Country Made:</strong> Germany<br><strong>Lug Width:</strong> 20mm<br><strong>Year Made:</strong> 2020<br><strong>Year Acquired:</strong> 2021<br><strong>Notes:</strong> Elegant dress watch with moon phase complication">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Glashuette_Original_Senator_Excellence_Panorama_Date_Moon_Phase.jpg/600px-Glashuette_Original_Senator_Excellence_Panorama_Date_Moon_Phase.jpg" class="card-img-top watch-img" alt="German Watch" />
-          <div class="hover-overlay">
-            <strong>Brand:</strong> Glashütte Original<br>
-            <strong>Model:</strong> Senator<br>
-            <strong>Movement:</strong> Automatic<br>
-            <strong>Country Made:</strong> Germany<br>
-            <strong>Lug Width:</strong> 20mm<br>
-            <strong>Year Made:</strong> 2020<br>
-            <strong>Year Acquired:</strong> 2021<br>
-            <strong>Notes:</strong> Elegant dress watch with moon phase complication
-          </div>
         </div>
       </div>
 
       <div class="col-md-2 mb-4 watch-item" data-movement="Manual" data-country="Sweden">
-        <div class="card watch-card">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Halios<br><strong>Model:</strong> Seaforth<br><strong>Movement:</strong> Manual<br><strong>Country Made:</strong> Sweden<br><strong>Lug Width:</strong> 20mm<br><strong>Year Made:</strong> 2018<br><strong>Year Acquired:</strong> 2019<br><strong>Notes:</strong> Microbrand dive watch with manual wind movement">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Halios_Seaforth.jpg/600px-Halios_Seaforth.jpg" class="card-img-top watch-img" alt="Swedish Watch" />
-          <div class="hover-overlay">
-            <strong>Brand:</strong> Halios<br>
-            <strong>Model:</strong> Seaforth<br>
-            <strong>Movement:</strong> Manual<br>
-            <strong>Country Made:</strong> Sweden<br>
-            <strong>Lug Width:</strong> 20mm<br>
-            <strong>Year Made:</strong> 2018<br>
-            <strong>Year Acquired:</strong> 2019<br>
-            <strong>Notes:</strong> Microbrand dive watch with manual wind movement
-          </div>
         </div>
       </div>
 
       <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="USA">
-        <div class="card watch-card">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Timex<br><strong>Model:</strong> Q Timex Reissue<br><strong>Movement:</strong> Quartz<br><strong>Country Made:</strong> USA<br><strong>Lug Width:</strong> 18mm<br><strong>Year Made:</strong> 2022<br><strong>Year Acquired:</strong> 2023<br><strong>Notes:</strong> Modern reissue of classic 1970s model">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Timex_Q_Timex_Reissue.jpg/600px-Timex_Q_Timex_Reissue.jpg" class="card-img-top watch-img" alt="Timex Watch" />
-          <div class="hover-overlay">
-            <strong>Brand:</strong> Timex<br>
-            <strong>Model:</strong> Q Timex Reissue<br>
-            <strong>Movement:</strong> Quartz<br>
-            <strong>Country Made:</strong> USA<br>
-            <strong>Lug Width:</strong> 18mm<br>
-            <strong>Year Made:</strong> 2022<br>
-            <strong>Year Acquired:</strong> 2023<br>
-            <strong>Notes:</strong> Modern reissue of classic 1970s model
-          </div>
         </div>
       </div>
-      <!-- End Example Watch Entries -->
 
     </div>
   </div>
@@ -157,6 +118,8 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
     $(function () {
+      const tooltip = $('#tooltip');
+
       function filterWatches() {
         const movement = $('#movementFilter').val();
         const country = $('#countryFilter').val();
@@ -173,6 +136,29 @@
       $('#clearFilters').on('click', function () {
         $('#movementFilter, #countryFilter').val('');
         filterWatches();
+      });
+
+      $('.watch-card').on('mouseenter', function (e) {
+        tooltip.html($(this).data('info')).fadeIn(200);
+      });
+
+      $('.watch-card').on('mousemove', function (e) {
+        const tooltipWidth = tooltip.outerWidth();
+        const tooltipHeight = tooltip.outerHeight();
+        const pageWidth = $(window).width();
+        const pageHeight = $(window).height();
+
+        let left = e.pageX + 15;
+        let top = e.pageY + 15;
+
+        if (left + tooltipWidth > pageWidth) left = e.pageX - tooltipWidth - 15;
+        if (top + tooltipHeight > pageHeight) top = e.pageY - tooltipHeight - 15;
+
+        tooltip.css({ top: top + 'px', left: left + 'px' });
+      });
+
+      $('.watch-card').on('mouseleave', function () {
+        tooltip.fadeOut(100);
       });
     });
   </script>
