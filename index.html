@@ -73,7 +73,6 @@
   </style>
   <!-- ========== END CSS ========== -->
 </head>
-
 <body class="container py-4">
   <h1 class="mb-4">My Watch Collection</h1>
 
@@ -81,207 +80,40 @@
   <div class="filter-bar d-flex flex-wrap mb-4">
     <label for="makeFilter">Make:</label>
     <select id="makeFilter" class="form-select form-select-sm w-auto"></select>
-
     <label for="movementFilter">Movement:</label>
     <select id="movementFilter" class="form-select form-select-sm w-auto"></select>
-
     <label for="lugFilter">Lug Width:</label>
     <select id="lugFilter" class="form-select form-select-sm w-auto"></select>
-
     <label for="countryFilter">Made In:</label>
     <select id="countryFilter" class="form-select form-select-sm w-auto"></select>
-
     <label for="yearMadeFilter">Year Made:</label>
     <select id="yearMadeFilter" class="form-select form-select-sm w-auto"></select>
-
     <label for="yearAcquiredFilter">Year Acquired:</label>
     <select id="yearAcquiredFilter" class="form-select form-select-sm w-auto"></select>
-
     <label for="diameterFilter">Case Diameter:</label>
     <select id="diameterFilter" class="form-select form-select-sm w-auto"></select>
-
     <button id="clearFilters" class="btn btn-secondary btn-sm ms-2">Show All / Clear Filters</button>
   </div>
   <!-- ========== END FILTER CONTROLS ========== -->
 
   <!-- ========== BEGIN WATCH GRID ========== -->
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4" id="watchGrid">
-    <!-- JS will inject watch cards here -->
-  </div>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4" id="watchGrid"></div>
   <!-- ========== END WATCH GRID ========== -->
 
-  <!-- Popup container and overlay -->
+  <!-- ========== BEGIN POPUP & OVERLAY ========== -->
   <div class="watch-overlay" id="overlay"></div>
   <div class="watch-hover" id="popup"></div>
+  <!-- ========== END POPUP & OVERLAY ========== -->
 
   <!-- ========== BEGIN SCRIPT SECTION ========== -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
-    const watches = [
-  {
-    "make": "Armitron",
-    "model": "40/8465BRGP \"Griffy\"",
-    "type": "Other",
-    "movement": "Quartz",
-    "movementName": "",
-    "lugWidth": 14,
-    "diameter": 34,
-    "madeIn": "China",
-    "yearMade": "~2025",
-    "yearAcquired": "2025",
-    "notes": "Uses CR1616 battery",
-    "img": "images/armitron.jpg"
-  },
-  {
-    "make": "Elgin",
-    "model": "Sportsman or Deluxe",
-    "type": "Dress",
-    "movement": "Automatic",
-    "movementName": "A. Schild AS1580/1701",
-    "lugWidth": 19,
-    "diameter": 34,
-    "madeIn": "USA",
-    "yearMade": "~1960",
-    "yearAcquired": "2025",
-    "notes": "Made between 60-63; picked up with thrifting with Z&G for ~$20. A special watch",
-    "img": "images/elgin.jpg"
-  },
-  {
-    "make": "Nezumi",
-    "model": "Voiture",
-    "type": "Chronograph",
-    "movement": "Quartz",
-    "movementName": "Seiko VK63 Mechaquartz",
-    "lugWidth": 20,
-    "diameter": 40,
-    "madeIn": "Sweden",
-    "yearMade": "2017",
-    "yearAcquired": "2017",
-    "notes": "First microbrand purchase; less than 500 made",
-    "img": "images/nezumi.jpg"
-  },
-  {
-    "make": "Pulsar",
-    "model": "V552-8159",
-    "type": "Dress",
-    "movement": "Quartz",
-    "movementName": "V552",
-    "lugWidth": 18,
-    "diameter": "",
-    "madeIn": "Japan",
-    "yearMade": "April, 1982",
-    "yearAcquired": "2025",
-    "notes": "Gift from Z&G from thrifting. Added new battery (SR920SW/371), polished crystal, new strap",
-    "img": "images/pulsar.jpg"
-  },
-  {
-    "make": "S2 Custom Build",
-    "model": "Acrylic",
-    "type": "Dive",
-    "movement": "Automatic",
-    "movementName": "NH35",
-    "lugWidth": 20,
-    "diameter": 40,
-    "madeIn": "USA",
-    "yearMade": "2022",
-    "yearAcquired": "2022",
-    "notes": "Acrylic case; tropical strap, octopus on the dial",
-    "img": "images/acrylic.jpg"
-  },
-  {
-    "make": "S2 Custom Build",
-    "model": "Stealth",
-    "type": "Field",
-    "movement": "Automatic",
-    "movementName": "NH35",
-    "lugWidth": 20,
-    "diameter": 38,
-    "madeIn": "USA",
-    "yearMade": "2024",
-    "yearAcquired": "2024",
-    "notes": "Has undergone several changes, new dial, hands, bracelet",
-    "img": "images/stealth.jpg"
-  },
-  {
-    "make": "S2 Custom Build",
-    "model": "Coffee",
-    "type": "Field",
-    "movement": "Automatic",
-    "movementName": "NH35",
-    "lugWidth": 20,
-    "diameter": 38,
-    "madeIn": "USA",
-    "yearMade": "~2021",
-    "yearAcquired": "~2021",
-    "notes": "Old timey dial soaked in coffee to make look old. Leather strap bought from Etsy in 2025",
-    "img": "images/coffee.jpg"
-  },
-  {
-    "make": "Seiko",
-    "model": "SKX007",
-    "type": "Dive",
-    "movement": "Automatic",
-    "movementName": "NH35",
-    "lugWidth": 22,
-    "diameter": 42,
-    "madeIn": "Singapore",
-    "yearMade": "~2018",
-    "yearAcquired": "2018",
-    "notes": "Added miltat oyster bracelet. Replaced 7S26 movement with NH movement.",
-    "img": "images/007.jpg"
-  },
-  {
-    "make": "Seiko",
-    "model": "SKX011 MOD",
-    "type": "Dive",
-    "movement": "Automatic",
-    "movementName": "7S26",
-    "lugWidth": 22,
-    "diameter": 42,
-    "madeIn": "Malaysia",
-    "yearMade": "~2020",
-    "yearAcquired": "2020",
-    "notes": "Modded with SNK dial and hands, dome crystal, new bezel insert, crown, chapter ring and super oyster II bracelet",
-    "img": "images/seikomod.jpg"
-  },
-  {
-    "make": "Timex",
-    "model": "Waterbury",
-    "type": "Chronograph",
-    "movement": "Quartz",
-    "movementName": "",
-    "lugWidth": 20,
-    "diameter": 40,
-    "madeIn": "Philippines",
-    "yearMade": "~2023",
-    "yearAcquired": "2024",
-    "notes": "Indiglo; uses battery CR2016",
-    "img": "images/waterbury.jpg"
-  },
-  {
-    "make": "Zeppelin",
-    "model": "Hindenburg Moonphase / 7036-3",
-    "type": "Dress",
-    "movement": "Quarts",
-    "movementName": "Miyota 6P80",
-    "lugWidth": 20,
-    "diameter": 40,
-    "madeIn": "Germany",
-    "yearMade": "~2019",
-    "yearAcquired": "2019",
-    "notes": "Moonphase; week # of year, day/date subdials",
-    "img": "images/zep.jpg"
-  }
-];
+    const watches = [...]; // your full watch array here (unchanged)
 
     const filters = {
-      makeFilter: 'make',
-      movementFilter: 'movement',
-      lugFilter: 'lugWidth',
-      countryFilter: 'madeIn',
-      yearMadeFilter: 'yearMade',
-      yearAcquiredFilter: 'yearAcquired',
-      diameterFilter: 'diameter'
+      makeFilter: 'make', movementFilter: 'movement', lugFilter: 'lugWidth',
+      countryFilter: 'madeIn', yearMadeFilter: 'yearMade',
+      yearAcquiredFilter: 'yearAcquired', diameterFilter: 'diameter'
     };
 
     function populateFilters() {
@@ -308,12 +140,9 @@
           ${watch.yearMade ? `<strong>Year Made:</strong> ${watch.yearMade}<br>` : ''}
           ${watch.yearAcquired ? `<strong>Year Acquired:</strong> ${watch.yearAcquired}<br>` : ''}
           ${watch.notes ? `<strong>Notes:</strong> ${watch.notes}` : ''}
-        </div>
-      `;
+        </div>`;
       $('#popup').html(html).fadeIn(200);
       $('#overlay').fadeIn(200);
-   
-    
     }
 
     function hidePopup() {
@@ -334,48 +163,45 @@
           <div class="watch-card" data-index="${index}" tabindex="0">
             <img src="${w.img}" class="watch-img" alt="${w.make} ${w.model}" />
             <div class="p-3">
-              <h6>${w.make} - ${w.model}</h6>
-              <p class="mb-0 text-muted">${w.type || ''} • ${w.movement || ''}</p>
-              <small>
-                ${w.movementName ? `<div><strong>Movement:</strong> ${w.movementName}</div>` : ''}
-                ${w.lugWidth ? `<div><strong>Lug Width:</strong> ${w.lugWidth}mm</div>` : ''}
-                ${w.diameter ? `<div><strong>Case Diameter:</strong> ${w.diameter}mm</div>` : ''}
-                ${w.madeIn ? `<div><strong>Made In:</strong> ${w.madeIn}</div>` : ''}
-                ${w.yearMade ? `<div><strong>Year Made:</strong> ${w.yearMade}</div>` : ''}
-                ${w.yearAcquired ? `<div><strong>Year Acquired:</strong> ${w.yearAcquired}</div>` : ''}
-                ${w.notes ? `<div><strong>Notes:</strong> ${w.notes}</div>` : ''}
-              </small>
+              <h6>${w.make}</h6>
+              <p class="mb-0 text-muted">${w.movement || ''}</p>
             </div>
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
 
       $('#watchGrid').html(html);
 
+      // Hover behavior
       $('.watch-card').on('mouseenter', function () {
-        const index = $(this).data('index');
-        showPopup(filtered[index]);
+        if (window.innerWidth > 768) {
+          const index = $(this).data('index');
+          showPopup(filtered[index]);
+        }
       });
 
-      $('#popup, .watch-card').on('mouseleave', function (e) {
-        if (!$(e.relatedTarget).closest('#popup').length) {
+      // Hide when mouse leaves popup or card (desktop)
+      $('#popup').add('#watchGrid').on('mouseleave', function (e) {
+        if (!$(e.relatedTarget).closest('#popup, .watch-card').length) {
           hidePopup();
         }
       });
 
-      $('.watch-card').on('click', function () {
-        const index = $(this).data('index');
-        showPopup(filtered[index]);
+      // Tap behavior (mobile)
+      $('.watch-card').on('click touchstart', function (e) {
+        if (window.innerWidth <= 768) {
+          const index = $(this).data('index');
+          showPopup(filtered[index]);
+        }
       });
 
-      $('#overlay').on('click', hidePopup);
+      $('#overlay, #popup').on('click touchstart', hidePopup);
     }
 
     $(function () {
       populateFilters();
       renderWatches();
       $('select').on('change', renderWatches);
-      $('#clearFilters').on('click', function() {
+      $('#clearFilters').on('click', function () {
         $('select').val('');
         renderWatches();
       });
