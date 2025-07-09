@@ -297,6 +297,22 @@
     function showPopup(watch) {
       const html = `
         <img src="${watch.img}" class="hover-img" alt="${watch.make}" />
+        <div>
+          <strong>${watch.make} - ${watch.model}</strong><br>
+          ${watch.type ? `<strong>Type:</strong> ${watch.type}<br>` : ''}
+          ${watch.movement ? `<strong>Movement:</strong> ${watch.movement}<br>` : ''}
+          ${watch.movementName ? `<strong>Movement Name:</strong> ${watch.movementName}<br>` : ''}
+          ${watch.lugWidth ? `<strong>Lug Width:</strong> ${watch.lugWidth}mm<br>` : ''}
+          ${watch.diameter ? `<strong>Case Diameter:</strong> ${watch.diameter}mm<br>` : ''}
+          ${watch.madeIn ? `<strong>Made In:</strong> ${watch.madeIn}<br>` : ''}
+          ${watch.yearMade ? `<strong>Year Made:</strong> ${watch.yearMade}<br>` : ''}
+          ${watch.yearAcquired ? `<strong>Year Acquired:</strong> ${watch.yearAcquired}<br>` : ''}
+          ${watch.notes ? `<strong>Notes:</strong> ${watch.notes}` : ''}
+        </div>
+      `;
+      $('#popup').html(html).fadeIn(200);
+      $('#overlay').fadeIn(200);
+    }" class="hover-img" alt="${watch.make}" />
         ${watch.movementName ? `<strong>Movement:</strong> ${watch.movementName}<br>` : ''}
         ${watch.lugWidth ? `<strong>Lug Width:</strong> ${watch.lugWidth}mm<br>` : ''}
         ${watch.diameter ? `<strong>Case Diameter:</strong> ${watch.diameter}mm<br>` : ''}
@@ -324,11 +340,20 @@
 
       const html = filtered.map((w, index) => `
         <div class="col">
-          <div class="watch-card" data-index="${index}">
+          <div class="watch-card" data-index="${index}" tabindex="0">
             <img src="${w.img}" class="watch-img" alt="${w.make} ${w.model}" />
             <div class="p-3">
               <h6>${w.make} - ${w.model}</h6>
               <p class="mb-0 text-muted">${w.type || ''} • ${w.movement || ''}</p>
+              <small>
+                ${w.movementName ? `<div><strong>Movement:</strong> ${w.movementName}</div>` : ''}
+                ${w.lugWidth ? `<div><strong>Lug Width:</strong> ${w.lugWidth}mm</div>` : ''}
+                ${w.diameter ? `<div><strong>Case Diameter:</strong> ${w.diameter}mm</div>` : ''}
+                ${w.madeIn ? `<div><strong>Made In:</strong> ${w.madeIn}</div>` : ''}
+                ${w.yearMade ? `<div><strong>Year Made:</strong> ${w.yearMade}</div>` : ''}
+                ${w.yearAcquired ? `<div><strong>Year Acquired:</strong> ${w.yearAcquired}</div>` : ''}
+                ${w.notes ? `<div><strong>Notes:</strong> ${w.notes}</div>` : ''}
+              </small>
             </div>
           </div>
         </div>
@@ -336,10 +361,21 @@
 
       $('#watchGrid').html(html);
 
-      $('.watch-card').hover(function () {
+      $('.watch-card').on('mouseenter', function () {
         const index = $(this).data('index');
         showPopup(filtered[index]);
-      }, hidePopup);
+      });
+
+      $('#popup, .watch-card').on('mouseleave', function (e) {
+        if (!$(e.relatedTarget).closest('#popup').length) {
+          hidePopup();
+        }
+      });
+
+      $('.watch-card').on('click', function () {
+        const index = $(this).data('index');
+        showPopup(filtered[index]);
+      });
 
       $('#overlay').on('click', hidePopup);
     }
