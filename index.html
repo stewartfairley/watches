@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>S2 Watch Catalog</title>
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
       background-color: #f9f9f9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     }
     h1 {
       font-weight: 600;
@@ -44,7 +41,7 @@
       border-radius: 12px;
       padding: 1rem;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      width: 220px;
+      width: 260px;
       font-size: 0.9rem;
     }
     .filters {
@@ -65,51 +62,54 @@
     <div class="d-flex flex-wrap justify-content-center filters">
       <select class="form-select w-auto" id="movementFilter">
         <option value="">All Movements</option>
-        <option value="Automatic">Automatic</option>
         <option value="Quartz">Quartz</option>
+        <option value="Automatic">Automatic</option>
         <option value="Manual">Manual</option>
       </select>
       <select class="form-select w-auto" id="countryFilter">
         <option value="">All Countries</option>
         <option value="Japan">Japan</option>
-        <option value="USA">USA</option>
-        <option value="Sweden">Sweden</option>
         <option value="Germany">Germany</option>
+        <option value="USA">USA</option>
+        <option value="China">China</option>
       </select>
       <button class="btn btn-clear" id="clearFilters">Clear Filters</button>
     </div>
 
     <!-- Tooltip -->
-    <<div class="row" id="watchGrid">
+    <div id="tooltip" class="tooltip-box"></div>
 
-  <!-- BEGIN WATCH CARD TEMPLATE (COPY FROM HERE TO DUPLICATE) -->
-  <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="Japan">
-    <div class="card watch-card" data-info="<strong>Brand:</strong> Pulsar<br><strong>Model:</strong> V552-8159<br><strong>Type:</strong> Dress<br><strong>Movement:</strong> Quartz (V552)<br><strong>Country Made:</strong> Japan<br><strong>Lug Width:</strong> 18mm<br><strong>Year Made:</strong> April, 1982<br><strong>Year Acquired:</strong> 2025<br><strong>Notes:</strong> Gift from Z&amp;G from thrifting. Added new battery and strap.">
-      <img src="images/pulsar.jpg" class="card-img-top watch-img" alt="Pulsar V552-8159" />
+    <!-- Watch Grid -->
+    <div class="row" id="watchGrid">
+
+      <!-- BEGIN WATCH CARD -->
+      <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="Japan">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Pulsar<br><strong>Model:</strong> V552-8159<br><strong>Type:</strong> Dress<br><strong>Movement:</strong> Quartz (V552)<br><strong>Country Made:</strong> Japan<br><strong>Lug Width:</strong> 18mm<br><strong>Year Made:</strong> April, 1982<br><strong>Year Acquired:</strong> 2025<br><strong>Notes:</strong> Gift from Z&amp;G from thrifting. Added new battery and strap.">
+          <img src="images/pulsar.jpg" class="card-img-top watch-img" alt="Pulsar V552-8159" />
+        </div>
+      </div>
+
+      <div class="col-md-2 mb-4 watch-item" data-movement="Automatic" data-country="Singapore">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Seiko<br><strong>Model:</strong> SKX007<br><strong>Type:</strong> Dive<br><strong>Movement:</strong> Automatic (NH35)<br><strong>Country Made:</strong> Singapore<br><strong>Lug Width:</strong> 22mm<br><strong>Year Made:</strong> ~2018<br><strong>Year Acquired:</strong> 2018<br><strong>Notes:</strong> Added miltat oyster bracelet. Replaced 7S26 movement with NH35.">
+          <img src="images/skx007.jpg" class="card-img-top watch-img" alt="Seiko SKX007" />
+        </div>
+      </div>
+
+      <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="China">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Armitron<br><strong>Model:</strong> 40/8465BRGP 'Griffy'<br><strong>Type:</strong> Other<br><strong>Movement:</strong> Quartz<br><strong>Country Made:</strong> China<br><strong>Lug Width:</strong> 14mm<br><strong>Year Made:</strong> ~2025<br><strong>Year Acquired:</strong> 2025<br><strong>Notes:</strong> Uses CR1616 battery">
+          <img src="images/armitron.jpg" class="card-img-top watch-img" alt="Armitron Griffy" />
+        </div>
+      </div>
+
+      <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="Germany">
+        <div class="card watch-card" data-info="<strong>Brand:</strong> Zeppelin<br><strong>Model:</strong> Hindenburg Moonphase / 7036-3<br><strong>Type:</strong> Dress<br><strong>Movement:</strong> Quartz (Miyota 6P80)<br><strong>Country Made:</strong> Germany<br><strong>Lug Width:</strong> 20mm<br><strong>Year Made:</strong> ~2019<br><strong>Year Acquired:</strong> 2019<br><strong>Notes:</strong> Moonphase; week # of year, day/date subdials">
+          <img src="images/zep.jpg" class="card-img-top watch-img" alt="Zeppelin 7036-3" />
+        </div>
+      </div>
+      <!-- END WATCH CARD -->
+
     </div>
   </div>
-  <!-- END WATCH CARD TEMPLATE -->
-
-  <div class="col-md-2 mb-4 watch-item" data-movement="Automatic" data-country="Singapore">
-    <div class="card watch-card" data-info="<strong>Brand:</strong> Seiko<br><strong>Model:</strong> SKX007<br><strong>Type:</strong> Dive<br><strong>Movement:</strong> Automatic (NH35)<br><strong>Country Made:</strong> Singapore<br><strong>Lug Width:</strong> 22mm<br><strong>Year Made:</strong> ~2018<br><strong>Year Acquired:</strong> 2018<br><strong>Notes:</strong> Added miltat oyster bracelet. Replaced 7S26 movement with NH35.">
-      <img src="images/skx007.jpg" class="card-img-top watch-img" alt="Seiko SKX007" />
-    </div>
-  </div>
-
-  <div class="col-md-2 mb-4 watch-item" data-movement="Quartz" data-country="China">
-    <div class="card watch-card" data-info="<strong>Brand:</strong> Armitron<br><strong>Model:</strong> 40/8465BRGP &quot;Griffy&quot;<br><strong>Type:</strong> Other<br><strong>Movement:</strong> Quartz<br><strong>Country Made:</strong> China<br><strong>Lug Width:</strong> 14mm<br><strong>Year Made:</strong> ~2025<br><strong>Year Acquired:</strong> 2025<br><strong>Notes:</strong> Uses CR1616 battery">
-      <img src="images/armitron.jpg" class="card-img-top watch-img" alt="Armitron Griffy" />
-    </div>
-  </div>
-
-  <div class="col-md-2 mb-4 watch-item" data-movement="Quarts" data-country="Germany">
-    <div class="card watch-card" data-info="<strong>Brand:</strong> Zeppelin<br><strong>Model:</strong> Hindenburg Moonphase / 7036-3<br><strong>Type:</strong> Dress<br><strong>Movement:</strong> Quarts (Miyota 6P80)<br><strong>Country Made:</strong> Germany<br><strong>Lug Width:</strong> 20mm<br><strong>Year Made:</strong> ~2019<br><strong>Year Acquired:</strong> 2019<br><strong>Notes:</strong> Moonphase; week # of year, day/date subdials">
-      <img src="images/zep.jpg" class="card-img-top watch-img" alt="Zeppelin Hindenburg" />
-    </div>
-  </div>
-
-</div>
-
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
