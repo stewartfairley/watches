@@ -26,6 +26,7 @@
     }
     .watch-card:hover {
       transform: translateY(-4px);
+      z-index: 999;
     }
     .watch-img {
       width: 100%;
@@ -36,13 +37,13 @@
       display: none;
       position: absolute;
       top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      left: 100%;
+      width: 300px;
       background-color: rgba(18,18,18,0.95);
       padding: 1rem;
-      z-index: 10;
-      overflow-y: auto;
+      z-index: 1000;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
     }
     .watch-card:hover .watch-hover {
       display: block;
@@ -88,11 +89,13 @@
 
     <label for="diameterFilter">Case Diameter:</label>
     <select id="diameterFilter" class="form-select form-select-sm w-auto"></select>
+
+    <button id="clearFilters" class="btn btn-secondary btn-sm ms-2">Show All / Clear Filters</button>
   </div>
   <!-- ========== END FILTER CONTROLS ========== -->
 
   <!-- ========== BEGIN WATCH GRID ========== -->
-  <div class="row" id="watchGrid">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4" id="watchGrid">
     <!-- JS will inject watch cards here -->
   </div>
   <!-- ========== END WATCH GRID ========== -->
@@ -100,78 +103,39 @@
   <!-- ========== BEGIN SCRIPT SECTION ========== -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
-    const watches = [
-      {
-        make: "Armitron",
-        model: "40/8465BRGP \"Griffy\"",
-        type: "Other",
-        movement: "Quartz",
-        movementName: "",
-        lugWidth: "14",
-        diameter: "34",
-        madeIn: "China",
-        yearMade: "~2025",
-        yearAcquired: "2025",
-        notes: "Uses CR1616 battery",
-        img: "images/armitron.jpg"
-      },
-      {
-        make: "Elgin",
-        model: "Sportsman or Deluxe",
-        type: "Dress",
-        movement: "Automatic",
-        movementName: "A. Schild AS1580/1701",
-        lugWidth: "19",
-        diameter: "34",
-        madeIn: "USA",
-        yearMade: "~1960",
-        yearAcquired: "2025",
-        notes: "Made between 60-63; picked up with thrifting w/ Z.",
-        img: "images/elgin.jpg"
-      },
-      {
-        make: "Nezumi",
-        model: "Voiture",
-        type: "Chronograph",
-        movement: "Quartz",
-        movementName: "Seiko VK63 Mechaquartz",
-        lugWidth: "20",
-        diameter: "40",
-        madeIn: "Sweden",
-        yearMade: "2017",
-        yearAcquired: "2017",
-        notes: "First microbrand purchase; less than 500 made",
-        img: "images/nezumi.jpg"
-      },
-      {
-        make: "Pulsar",
-        model: "V552-8159",
-        type: "Dress",
-        movement: "Quartz",
-        movementName: "V552",
-        lugWidth: "18",
-        diameter: "",
-        madeIn: "Japan",
-        yearMade: "April, 1982",
-        yearAcquired: "2025",
-        notes: "Gift from Z&G from thrifting. Added new battery.",
-        img: "images/pulsar.jpg"
-      },
-      {
-        make: "S2 Custom Build",
-        model: "Acrylic",
-        type: "Dive",
-        movement: "Automatic",
-        movementName: "NH35",
-        lugWidth: "20",
-        diameter: "40",
-        madeIn: "USA",
-        yearMade: "2022",
-        yearAcquired: "2022",
-        notes: "Acrylic case; tropical strap, octopus on the dial",
-        img: "images/acrylic.jpg"
-      }
-    ];
+    let watches = [];
+
+    function fetchCSVAndInit() {
+      $.get('/mnt/data/watchlist.csv', function(data) {
+        const lines = data.trim().split('\n');
+        const headers = lines[0].split(',');
+
+        watches = lines.slice(1).map(line => {
+          const values = line.split(',');
+          const obj = {};
+          headers.forEach((key, i) => {
+            obj[key.trim().toLowerCase().replace(/\s+/g, '')] = values[i] || '';
+          });
+          return {
+            make: obj.make,
+            model: obj['model/reference'],
+            type: obj.type,
+            movement: obj.movementtype,
+            movementName: obj.movementname,
+            lugWidth: obj['lugwidth(mm)'],
+            diameter: obj['casediameter(mm)'],
+            madeIn: obj.madein,
+            yearMade: obj.yearmade,
+            yearAcquired: obj.yearacquired,
+            notes: obj.notes,
+            img: obj['imgreference:']
+          };
+        });
+
+        populateFilters();
+        renderWatches();
+      });
+    }
 
     const filters = {
       makeFilter: 'make',
@@ -187,6 +151,7 @@
       for (const [selectId, key] of Object.entries(filters)) {
         const values = [...new Set(watches.map(w => w[key]).filter(Boolean))].sort();
         const select = $(`#${selectId}`);
+        select.empty();
         select.append(`<option value="">All</option>`);
         values.forEach(v => select.append(`<option value="${v}">${v}</option>`));
       }
@@ -201,22 +166,22 @@
       });
 
       const html = filtered.map(w => `
-        <div class="col-md-4 mb-4">
+        <div class="col">
           <div class="watch-card">
             <img src="${w.img}" class="watch-img" alt="${w.make} ${w.model}" />
             <div class="p-3">
-              <h5>${w.make} - ${w.model}</h5>
-              <p class="mb-0 text-muted">${w.type} • ${w.movement}</p>
+              <h6>${w.make} - ${w.model}</h6>
+              <p class="mb-0 text-muted">${w.type || ''} • ${w.movement || ''}</p>
             </div>
             <div class="watch-hover">
               <img src="${w.img}" class="hover-img" alt="${w.make}" />
-              <strong>Movement:</strong> ${w.movementName || w.movement}<br>
-              <strong>Lug Width:</strong> ${w.lugWidth}mm<br>
-              <strong>Case Diameter:</strong> ${w.diameter}mm<br>
-              <strong>Made In:</strong> ${w.madeIn}<br>
-              <strong>Year Made:</strong> ${w.yearMade}<br>
-              <strong>Year Acquired:</strong> ${w.yearAcquired}<br>
-              <strong>Notes:</strong> ${w.notes}
+              ${w.movementName ? `<strong>Movement:</strong> ${w.movementName}<br>` : ''}
+              ${w.lugWidth ? `<strong>Lug Width:</strong> ${w.lugWidth}mm<br>` : ''}
+              ${w.diameter ? `<strong>Case Diameter:</strong> ${w.diameter}mm<br>` : ''}
+              ${w.madeIn ? `<strong>Made In:</strong> ${w.madeIn}<br>` : ''}
+              ${w.yearMade ? `<strong>Year Made:</strong> ${w.yearMade}<br>` : ''}
+              ${w.yearAcquired ? `<strong>Year Acquired:</strong> ${w.yearAcquired}<br>` : ''}
+              ${w.notes ? `<strong>Notes:</strong> ${w.notes}` : ''}
             </div>
           </div>
         </div>
@@ -226,9 +191,12 @@
     }
 
     $(function () {
-      populateFilters();
-      renderWatches();
+      fetchCSVAndInit();
       $('select').on('change', renderWatches);
+      $('#clearFilters').on('click', function() {
+        $('select').val('');
+        renderWatches();
+      });
     });
   </script>
   <!-- ========== END SCRIPT SECTION ========== -->
