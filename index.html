@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Watch Catalog</title>
-  <!-- ========== BEGIN CSS ========== -->
+   <!-- ========== BEGIN CSS ========== -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -14,7 +14,24 @@
       font-family: 'Segoe UI', sans-serif;
     }
     .filter-bar {
-      margin-bottom: 1rem;
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .filter-group label {
+      font-size: 0.9rem;
+      margin-right: 0.3rem;
+    }
+    .filter-item {
+      display: flex;
+      align-items: center;
     }
     .watch-card {
       background-color: #1e1e1e;
@@ -64,35 +81,47 @@
       z-index: 1040;
       display: none;
     }
-    label {
-      margin-right: 0.5rem;
-    }
-    select {
-      margin-right: 1rem;
-    }
   </style>
   <!-- ========== END CSS ========== -->
 </head>
 <body class="container py-4">
-  <h1 class="mb-4">My Watch Collection</h1>
+  <h1 class="mb-4">S2 Watch Collection</h1>
 
   <!-- ========== BEGIN FILTER CONTROLS ========== -->
-  <div class="filter-bar d-flex flex-wrap mb-4">
-    <label for="makeFilter">Make:</label>
-    <select id="makeFilter" class="form-select form-select-sm w-auto"></select>
-    <label for="movementFilter">Movement:</label>
-    <select id="movementFilter" class="form-select form-select-sm w-auto"></select>
-    <label for="lugFilter">Lug Width:</label>
-    <select id="lugFilter" class="form-select form-select-sm w-auto"></select>
-    <label for="countryFilter">Made In:</label>
-    <select id="countryFilter" class="form-select form-select-sm w-auto"></select>
-    <label for="yearMadeFilter">Year Made:</label>
-    <select id="yearMadeFilter" class="form-select form-select-sm w-auto"></select>
-    <label for="yearAcquiredFilter">Year Acquired:</label>
-    <select id="yearAcquiredFilter" class="form-select form-select-sm w-auto"></select>
-    <label for="diameterFilter">Case Diameter:</label>
-    <select id="diameterFilter" class="form-select form-select-sm w-auto"></select>
-    <button id="clearFilters" class="btn btn-secondary btn-sm ms-2">Show All / Clear Filters</button>
+  <div class="filter-bar">
+    <div class="filter-group">
+      <div class="filter-item">
+        <label for="makeFilter">Make:</label>
+        <select id="makeFilter" class="form-select form-select-sm w-auto"></select>
+      </div>
+      <div class="filter-item">
+        <label for="movementFilter">Movement:</label>
+        <select id="movementFilter" class="form-select form-select-sm w-auto"></select>
+      </div>
+      <div class="filter-item">
+        <label for="lugFilter">Lug Width:</label>
+        <select id="lugFilter" class="form-select form-select-sm w-auto"></select>
+      </div>
+      <div class="filter-item">
+        <label for="countryFilter">Made In:</label>
+        <select id="countryFilter" class="form-select form-select-sm w-auto"></select>
+      </div>
+      <div class="filter-item">
+        <label for="yearMadeFilter">Year Made:</label>
+        <select id="yearMadeFilter" class="form-select form-select-sm w-auto"></select>
+      </div>
+      <div class="filter-item">
+        <label for="yearAcquiredFilter">Year Acquired:</label>
+        <select id="yearAcquiredFilter" class="form-select form-select-sm w-auto"></select>
+      </div>
+      <div class="filter-item">
+        <label for="diameterFilter">Case Diameter:</label>
+        <select id="diameterFilter" class="form-select form-select-sm w-auto"></select>
+      </div>
+      <div class="filter-item">
+        <button id="clearFilters" class="btn btn-secondary btn-sm">Show All / Clear Filters</button>
+      </div>
+    </div>
   </div>
   <!-- ========== END FILTER CONTROLS ========== -->
 
