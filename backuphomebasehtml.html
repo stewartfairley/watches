@@ -215,28 +215,19 @@ $(function () {
   populateFilters();
 
   filters.forEach(({ id }) => {
-    $('#' + id).on('change', function () {
-      filters.forEach(f => {
-        if (f.id !== id) $('#' + f.id).val('');
-      });
-      renderWatches();
-    });
+    $('#' + id).on('change', renderWatches);
   });
-
   $('#clearFilters').on('click', () => {
     filters.forEach(({ id }) => $('#' + id).val(''));
     renderWatches();
   });
-
   $('#watchGrid').on('click', '.watch-card', function () {
     showPopup($(this).data('index'));
   });
-
   $('#overlay').on('click', function () {
     $('#popup, #overlay').fadeOut(150);
   });
 });
-
   </script>
   <!-- ========== END SCRIPT SECTION ========== -->
 </body>
