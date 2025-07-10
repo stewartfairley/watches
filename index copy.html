@@ -19,7 +19,10 @@
       overflow: hidden; transition: transform 0.2s; position: relative;
     }
     .watch-card:hover { transform: translateY(-4px); z-index: 999; }
-    .watch-img { width: 100%; height: 200px; object-fit: cover; }
+    .watch-card small {
+  color: #fdbb2d; /* Darker golden-yellow from image */
+}
+.watch-img { width: 100%; height: 200px; object-fit: cover; }
     .watch-hover {
       display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: 360px; max-height: 80vh; overflow-y: auto; background-color: rgba(18,18,18,0.98);
