@@ -43,18 +43,16 @@
 
   <!-- FILTERS -->
   <div class="filter-bar">
-<div class="filter-group">
-  <div class="filter-item"><label for="makeFilter">Make:</label><select id="makeFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><label for="movementFilter">Movement:</label><select id="movementFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><label for="lugFilter">Lug Width:</label><select id="lugFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><label for="countryFilter">Made In:</label><select id="countryFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><label for="yearMadeFilter">Year Made:</label><select id="yearMadeFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><label for="yearAcquiredFilter">Year Acquired:</label><select id="yearAcquiredFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><label for="diameterFilter">Case Diameter:</label><select id="diameterFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><label for="typeFilter">Type:</label><select id="typeFilter" class="form-select form-select-sm w-auto"></select></div>
-  <div class="filter-item"><button id="clearFilters" class="btn btn-secondary btn-sm">Show All / Clear Filters</button></div>
-</div>
-
+    <div class="filter-group">
+      <div class="filter-item"><label for="makeFilter">Make:</label><select id="makeFilter" class="form-select form-select-sm w-auto"></select></div>
+      <div class="filter-item"><label for="movementFilter">Movement:</label><select id="movementFilter" class="form-select form-select-sm w-auto"></select></div>
+      <div class="filter-item"><label for="lugFilter">Lug Width:</label><select id="lugFilter" class="form-select form-select-sm w-auto"></select></div>
+      <div class="filter-item"><label for="countryFilter">Made In:</label><select id="countryFilter" class="form-select form-select-sm w-auto"></select></div>
+      <div class="filter-item"><label for="yearMadeFilter">Year Made:</label><select id="yearMadeFilter" class="form-select form-select-sm w-auto"></select></div>
+      <div class="filter-item"><label for="yearAcquiredFilter">Year Acquired:</label><select id="yearAcquiredFilter" class="form-select form-select-sm w-auto"></select></div>
+      <div class="filter-item"><label for="diameterFilter">Case Diameter:</label><select id="diameterFilter" class="form-select form-select-sm w-auto"></select></div>
+      <div class="filter-item"><button id="clearFilters" class="btn btn-secondary btn-sm">Show All / Clear Filters</button></div>
+    </div>
   </div>
 
   <!-- WATCH GRID -->
@@ -68,17 +66,15 @@
   <!-- JS -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
-const filters = [
-  { id: 'makeFilter', key: 'make' },
-  { id: 'movementFilter', key: 'movement' },
-  { id: 'lugFilter', key: 'lugWidth' },
-  { id: 'countryFilter', key: 'madeIn' },
-  { id: 'yearMadeFilter', key: 'yearMade' },
-  { id: 'yearAcquiredFilter', key: 'yearAcquired' },
-  { id: 'diameterFilter', key: 'diameter' },
-  { id: 'typeFilter', key: 'type' }  // 👈 ADD THIS LINE
-];
-
+    const filters = [
+      { id: 'makeFilter', key: 'make' },
+      { id: 'movementFilter', key: 'movement' },
+      { id: 'lugFilter', key: 'lugWidth' },
+      { id: 'countryFilter', key: 'madeIn' },
+      { id: 'yearMadeFilter', key: 'yearMade' },
+      { id: 'yearAcquiredFilter', key: 'yearAcquired' },
+      { id: 'diameterFilter', key: 'diameter' }
+    ];
 
     const watches = [
       {"make":"Armitron","model":"40/8465BRGP \"Griffy\"","type":"Other","movement":"Quartz","movementName":"","lugWidth":14,"diameter":34.0,"madeIn":"China","yearMade":"~2025","yearAcquired":"2025","notes":"Uses CR1616 battery","img":"images/armitron.jpg"},
