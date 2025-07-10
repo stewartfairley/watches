@@ -59,6 +59,16 @@
   <!-- JS -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
+    const filters = [
+      { id: 'makeFilter', key: 'make' },
+      { id: 'movementFilter', key: 'movement' },
+      { id: 'lugFilter', key: 'lugWidth' },
+      { id: 'countryFilter', key: 'madeIn' },
+      { id: 'yearMadeFilter', key: 'yearMade' },
+      { id: 'yearAcquiredFilter', key: 'yearAcquired' },
+      { id: 'diameterFilter', key: 'diameter' }
+    ];
+
     const watches = [
       {"make":"Armitron","model":"40/8465BRGP \"Griffy\"","type":"Other","movement":"Quartz","movementName":"","lugWidth":14,"diameter":34.0,"madeIn":"China","yearMade":"~2025","yearAcquired":"2025","notes":"Uses CR1616 battery","img":"images/armitron.jpg"},
       {"make":"Elgin","model":"Sportsman or Deluxe","type":"Dress","movement":"Automatic","movementName":"A. Schild AS1580/1701","lugWidth":19,"diameter":34.0,"madeIn":"USA","yearMade":"~1960","yearAcquired":"2025","notes":"Made between 60-63; picked up with thrifting with Z&G for ~$20.  A special watch","img":"images/elgin.jpg"},
@@ -81,38 +91,6 @@
       {"make":"Zeppelin","model":"Hindenburg Moonphase / 7036-3","type":"Dress","movement":"Quartz","movementName":"Miyota 6P80","lugWidth":20,"diameter":40.0,"madeIn":"Germany","yearMade":"~2019","yearAcquired":"2019","notes":"Moonphase; week # of year, day/date subdials","img":"images/zep.jpg"}
     ];
 
-    const filters = [
-      { id: 'makeFilter', key: 'make' },
-      { id: 'movementFilter', key: 'movement' },
-      { id: 'lugFilter', key: 'lugWidth' },
-      { id: 'countryFilter', key: 'madeIn' },
-      { id: 'yearMadeFilter', key: 'yearMade' },
-      { id: 'yearAcquiredFilter', key: 'yearAcquired' },
-      { id: 'diameterFilter', key: 'diameter' }
-    ];
-
-    function renderWatches() {
-      const grid = $('#watchGrid');
-      grid.empty();
-      const activeFilters = Object.fromEntries(filters.map(f => [f.key, $('#' + f.id).val()]));
-
-      watches.filter(w => {
-        return Object.entries(activeFilters).every(([key, val]) => !val || String(w[key]) === val);
-      }).forEach((watch, i) => {
-        const card = $(
-          `<div class="col">
-            <div class="watch-card" data-index="${i}">
-              <img src="${watch.img}" alt="${watch.make}" class="watch-img"/>
-              <div class="p-2">
-                <strong>${watch.make}</strong><br/>
-                <small>${watch.model}</small>
-              </div>
-            </div>
-          </div>`);
-        grid.append(card);
-      });
-    }
-
     function populateFilters() {
       filters.forEach(({ id, key }) => {
         const values = [...new Set(watches.map(w => w[key]).filter(Boolean))].sort();
@@ -122,8 +100,33 @@
       });
     }
 
-    function showPopup(index) {
-      const w = watches[index];
+    function renderWatches() {
+      const grid = $('#watchGrid');
+      grid.empty();
+      const activeFilters = Object.fromEntries(filters.map(f => [f.key, $('#' + f.id).val()]));
+
+      const filteredWatches = watches.filter(w => {
+        return Object.entries(activeFilters).every(([key, val]) => !val || String(w[key]) === val);
+      });
+
+      filteredWatches.forEach((watch) => {
+        const card = $(`
+          <div class="col">
+            <div class="watch-card" data-watch='${JSON.stringify(watch)}'>
+              <img src="${watch.img}" alt="${watch.make}" class="watch-img"/>
+              <div class="p-2">
+                <strong>${watch.make}</strong><br/>
+                <small>${watch.model}</small>
+              </div>
+            </div>
+          </div>
+        `);
+        grid.append(card);
+      });
+    }
+
+    function showPopupFromData(data) {
+      const w = data;
       $('#popup').html(`
         <img src="${w.img}" class="hover-img"/>
         <div><strong>${w.make} – ${w.model}</strong></div>
@@ -158,7 +161,8 @@
       });
 
       $('#watchGrid').on('click', '.watch-card', function () {
-        showPopup($(this).data('index'));
+        const watchData = $(this).data('watch');
+        showPopupFromData(watchData);
       });
 
       $('#overlay').on('click', () => $('#popup, #overlay').fadeOut(150));
