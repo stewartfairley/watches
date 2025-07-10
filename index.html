@@ -19,7 +19,10 @@
       overflow: hidden; transition: transform 0.2s; position: relative;
     }
     .watch-card:hover { transform: translateY(-4px); z-index: 999; }
-    .watch-img { width: 100%; height: 200px; object-fit: cover; }
+    .watch-card small {
+  color: #fdbb2d; /* Darker golden-yellow from image */
+}
+.watch-img { width: 100%; height: 200px; object-fit: cover; }
     .watch-hover {
       display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: 360px; max-height: 80vh; overflow-y: auto; background-color: rgba(18,18,18,0.98);
@@ -30,17 +33,15 @@
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0,0,0,0.5); z-index: 1040; display: none;
     }
-    .watch-card small {
-      color: #fdbb2d;
-    }
-    footer {
+      footer {
       text-align: center; margin-top: 4rem; padding-top: 2rem; padding-bottom: 1rem;
       font-size: 0.9rem; color: #888;
-    }
-  </style>
+    }</style>
 </head>
 <body class="container py-4">
   <h1 class="mb-4">S2 Watch Collection</h1>
+
+  <!-- FILTERS -->
   <div class="filter-bar">
     <div class="filter-group">
       <div class="filter-item"><label for="makeFilter">Make:</label><select id="makeFilter" class="form-select form-select-sm w-auto"></select></div>
@@ -50,16 +51,31 @@
       <div class="filter-item"><label for="yearMadeFilter">Year Made:</label><select id="yearMadeFilter" class="form-select form-select-sm w-auto"></select></div>
       <div class="filter-item"><label for="yearAcquiredFilter">Year Acquired:</label><select id="yearAcquiredFilter" class="form-select form-select-sm w-auto"></select></div>
       <div class="filter-item"><label for="diameterFilter">Case Diameter:</label><select id="diameterFilter" class="form-select form-select-sm w-auto"></select></div>
-      <div class="filter-item"><label for="typeFilter">Type:</label><select id="typeFilter" class="form-select form-select-sm w-auto"></select></div>
       <div class="filter-item"><button id="clearFilters" class="btn btn-secondary btn-sm">Show All / Clear Filters</button></div>
     </div>
   </div>
+
+  <!-- WATCH GRID -->
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4" id="watchGrid"></div>
+
+  <!-- POPUP -->
   <div class="watch-overlay" id="overlay"></div>
   <div class="watch-hover" id="popup"></div>
+  <!-- FOOTER -->
   <footer>&copy; 2025 Love Industries, LLC</footer>
+  <!-- JS -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
+    const filters = [
+      { id: 'makeFilter', key: 'make' },
+      { id: 'movementFilter', key: 'movement' },
+      { id: 'lugFilter', key: 'lugWidth' },
+      { id: 'countryFilter', key: 'madeIn' },
+      { id: 'yearMadeFilter', key: 'yearMade' },
+      { id: 'yearAcquiredFilter', key: 'yearAcquired' },
+      { id: 'diameterFilter', key: 'diameter' }
+    ];
+
     const watches = [
       {"make":"Armitron","model":"40/8465BRGP \"Griffy\"","type":"Other","movement":"Quartz","movementName":"","lugWidth":14,"diameter":34.0,"madeIn":"China","yearMade":"~2025","yearAcquired":"2025","notes":"Uses CR1616 battery","img":"images/armitron.jpg"},
       {"make":"Elgin","model":"Sportsman or Deluxe","type":"Dress","movement":"Automatic","movementName":"A. Schild AS1580/1701","lugWidth":19,"diameter":34.0,"madeIn":"USA","yearMade":"~1960","yearAcquired":"2025","notes":"Made between 60-63; picked up with thrifting with Z&G for ~$20.  A special watch","img":"images/elgin.jpg"},
@@ -81,16 +97,83 @@
       {"make":"Tudor","model":"Black Bay 58","type":"Dive","movement":"Automatic","movementName":"MT5402","lugWidth":20,"diameter":39.0,"madeIn":"Switzerland","yearMade":"2021","yearAcquired":"2021","notes":"","img":"images/tudor.jpg"},
       {"make":"Zeppelin","model":"Hindenburg Moonphase / 7036-3","type":"Dress","movement":"Quartz","movementName":"Miyota 6P80","lugWidth":20,"diameter":40.0,"madeIn":"Germany","yearMade":"~2019","yearAcquired":"2019","notes":"Moonphase; week # of year, day/date subdials","img":"images/zep.jpg"}
     ];
-    const filters = [
-      { id: 'makeFilter', key: 'make' },
-      { id: 'movementFilter', key: 'movement' },
-      { id: 'lugFilter', key: 'lugWidth' },
-      { id: 'countryFilter', key: 'madeIn' },
-      { id: 'yearMadeFilter', key: 'yearMade' },
-      { id: 'yearAcquiredFilter', key: 'yearAcquired' },
-      { id: 'diameterFilter', key: 'diameter' },
-      { id: 'typeFilter', key: 'type' }
-    ];
+
+    function populateFilters() {
+      filters.forEach(({ id, key }) => {
+        const values = [...new Set(watches.map(w => w[key]).filter(Boolean))].sort();
+        const dropdown = $('#' + id);
+        dropdown.append('<option value="">All</option>');
+        values.forEach(v => dropdown.append(`<option value="${v}">${v}</option>`));
+      });
+    }
+
+    function renderWatches() {
+      const grid = $('#watchGrid');
+      grid.empty();
+      const activeFilters = Object.fromEntries(filters.map(f => [f.key, $('#' + f.id).val()]));
+
+      const filteredWatches = watches.filter(w => {
+        return Object.entries(activeFilters).every(([key, val]) => !val || String(w[key]) === val);
+      });
+
+      filteredWatches.forEach((watch) => {
+        const card = $(`
+          <div class="col">
+            <div class="watch-card" data-watch='${JSON.stringify(watch)}'>
+              <img src="${watch.img}" alt="${watch.make}" class="watch-img"/>
+              <div class="p-2">
+                <strong>${watch.make}</strong><br/>
+                <small>${watch.model}</small>
+              </div>
+            </div>
+          </div>
+        `);
+        grid.append(card);
+      });
+    }
+
+    function showPopupFromData(data) {
+      const w = data;
+      $('#popup').html(`
+        <img src="${w.img}" class="hover-img"/>
+        <div><strong>${w.make} – ${w.model}</strong></div>
+        <div><em>${w.type}</em></div>
+        <div>Movement: ${w.movement} ${w.movementName}</div>
+        <div>Lug Width: ${w.lugWidth}mm</div>
+        <div>Case Diameter: ${w.diameter}mm</div>
+        <div>Made In: ${w.madeIn}</div>
+        <div>Year Made: ${w.yearMade}</div>
+        <div>Year Acquired: ${w.yearAcquired}</div>
+        <div class="mt-2 small">${w.notes}</div>
+      `);
+      $('#overlay, #popup').fadeIn(150);
+    }
+
+    $(function () {
+      populateFilters();
+      renderWatches();
+
+      filters.forEach(({ id }) => {
+        $('#' + id).on('change', function () {
+          filters.forEach(({ id: otherId }) => {
+            if (otherId !== id) $('#' + otherId).val('');
+          });
+          renderWatches();
+        });
+      });
+
+      $('#clearFilters').on('click', () => {
+        filters.forEach(({ id }) => $('#' + id).val(''));
+        renderWatches();
+      });
+
+      $('#watchGrid').on('click', '.watch-card', function () {
+        const watchData = $(this).data('watch');
+        showPopupFromData(watchData);
+      });
+
+      $('#overlay').on('click', () => $('#popup, #overlay').fadeOut(150));
+    });
   </script>
 </body>
 </html>
