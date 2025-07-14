@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    .card {
+      background-color: #1e1e1e;
+      border: none;
+    }
+    .card-title {
+      color: #ffffff;
+    }
+    .clock {
+      font-size: 2em;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+      <!-- Clock -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Clock</h5>
+            <div class="clock" id="clock"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weather -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Weather (61704)</h5>
+            <div id="weather"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sports Headlines -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Sports Headlines</h5>
+            <ul id="sports" class="list-unstyled"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Webcam -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Live Webcam</h5>
+            <iframe src="https://www.earthcam.com/usa/newyork/timessquare/?cam=tsrobo1" style="width: 100%; height: 200px; border: none;"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- This Day in History -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">This Day in History</h5>
+            <div id="history"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fun Fact -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Random Fun Fact</h5>
+            <div id="funfact"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      $('#clock').text(timeString);
+    }
+
+    function fetchWeather() {
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=40.48&longitude=-88.99&current_weather=true')
+        .then(res => res.json())
+        .then(data => {
+          const weather = data.current_weather;
+          $('#weather').html(`${weather.temperature}°C, ${weather.weathercode}`);
+        });
+    }
+
+    function fetchSports() {
+      const feedUrl = 'https://cors-anywhere.herokuapp.com/https://www.espn.com/espn/rss/news';
+      $.ajax({
+        url: feedUrl,
+        method: 'GET',
+        dataType: 'xml',
+        success: function (data) {
+          const $items = $(data).find('item').slice(0, 5);
+          $('#sports').empty();
+          $items.each(function () {
+            const title = $(this).find('title').text();
+            $('#sports').append(`<li>• ${title}</li>`);
+          });
+        }
+      });
+    }
+
+    function fetchHistory() {
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      const day = today.getDate();
+      fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`)
+        .then(res => res.json())
+        .then(data => {
+          const events = data.events.slice(0, 3).map(e => `• ${e.year}: ${e.text}`);
+          $('#history').html(events.join('<br>'));
+        });
+    }
+
+    function fetchFunFact() {
+      fetch('https://uselessfacts.jsph.pl/api/v2/facts/random')
+        .then(res => res.json())
+        .then(data => {
+          $('#funfact').text(data.text);
+        });
+    }
+
+    function refreshAll() {
+      updateClock();
+      fetchWeather();
+      fetchSports();
+      fetchHistory();
+      fetchFunFact();
+    }
+
+    $(document).ready(() => {
+      refreshAll();
+      setInterval(refreshAll, 5 * 60 * 1000); // Refresh every 5 minutes
+      setInterval(updateClock, 1000); // Update clock every second
+    });
+  </script>
+</body>
+</html>
