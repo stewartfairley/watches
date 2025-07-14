@@ -64,7 +64,9 @@
         <div class="card h-100">
           <div class="card-body">
             <h5 class="card-title">Live Webcam</h5>
-            <iframe src="https://www.earthcam.com/usa/newyork/timessquare/?cam=tsrobo1" style="width: 100%; height: 200px; border: none;"></iframe>
+            <div style="height: 200px; overflow: hidden;">
+              <iframe src="https://www.earthcam.com/usa/newyork/timessquare/?cam=tsrobo1" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
           </div>
         </div>
       </div>
@@ -104,44 +106,39 @@
         .then(res => res.json())
         .then(data => {
           const weather = data.current_weather;
-          $('#weather').html(`${weather.temperature}°C, ${weather.weathercode}`);
+          $('#weather').html(`${weather.temperature}°C, Wind: ${weather.windspeed} km/h`);
         });
     }
 
     function fetchSports() {
-      const feedUrl = 'https://cors-anywhere.herokuapp.com/https://www.espn.com/espn/rss/news';
-      $.ajax({
-        url: feedUrl,
-        method: 'GET',
-        dataType: 'xml',
-        success: function (data) {
-          const $items = $(data).find('item').slice(0, 5);
-          $('#sports').empty();
-          $items.each(function () {
-            const title = $(this).find('title').text();
-            $('#sports').append(`<li>• ${title}</li>`);
-          });
-        }
-      });
+      const feedUrl = 'https://www.espn.com/espn/rss/news';
+      fetch(feedUrl)
+        .then(response => response.text())
+        .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+        .then(data => {
+          const items = data.querySelectorAll("item");
+          const list = Array.from(items).slice(0, 5).map(item => `<li>• ${item.querySelector("title").textContent}</li>`);
+          document.getElementById("sports").innerHTML = list.join('');
+        });
     }
 
     function fetchHistory() {
       const today = new Date();
       const month = today.getMonth() + 1;
       const day = today.getDate();
-      fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`)
+      fetch(`https://byabbe.se/on-this-day/${month}/${day}/events.json`)
         .then(res => res.json())
         .then(data => {
-          const events = data.events.slice(0, 3).map(e => `• ${e.year}: ${e.text}`);
-          $('#history').html(events.join('<br>'));
+          const items = data.events.slice(0, 3).map(e => `• ${e.year}: ${e.description}`);
+          $('#history').html(items.join('<br>'));
         });
     }
 
     function fetchFunFact() {
-      fetch('https://uselessfacts.jsph.pl/api/v2/facts/random')
+      fetch('https://api.chucknorris.io/jokes/random')
         .then(res => res.json())
         .then(data => {
-          $('#funfact').text(data.text);
+          $('#funfact').text(data.value);
         });
     }
 
