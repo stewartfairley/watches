@@ -19,14 +19,24 @@
       color: #ffffff;
     }
     .clock {
-      font-size: 2em;
+      font-size: 3em;
       font-weight: bold;
       text-align: center;
       color: #00ffff;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #weather {
+      font-size: 1.5em;
       color: #ffcc00;
       font-weight: bold;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
     #sports li {
       color: #ffffff;
@@ -38,6 +48,15 @@
     #funfact {
       color: #90ee90;
     }
+    .webcam-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .webcam-wrapper {
+      height: 100%;
+      min-height: 200px;
+    }
   </style>
 </head>
 <body>
@@ -47,9 +66,9 @@
       <!-- Clock -->
       <div class="col">
         <div class="card h-100">
-          <div class="card-body">
+          <div class="card-body d-flex flex-column">
             <h5 class="card-title">Clock</h5>
-            <div class="clock" id="clock"></div>
+            <div class="clock flex-grow-1" id="clock"></div>
           </div>
         </div>
       </div>
@@ -57,18 +76,18 @@
       <!-- Weather -->
       <div class="col">
         <div class="card h-100">
-          <div class="card-body">
+          <div class="card-body d-flex flex-column">
             <h5 class="card-title">Weather (61704)</h5>
-            <div id="weather"></div>
+            <div id="weather" class="flex-grow-1"></div>
           </div>
         </div>
       </div>
 
-      <!-- Sports Headlines -->
+      <!-- Sports Scores -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">Sports Headlines</h5>
+            <h5 class="card-title">Sports Scores</h5>
             <ul id="sports" class="list-unstyled"></ul>
           </div>
         </div>
@@ -77,11 +96,9 @@
       <!-- Webcam -->
       <div class="col">
         <div class="card h-100">
-          <div class="card-body">
+          <div class="card-body webcam-wrapper">
             <h5 class="card-title">Live Webcam</h5>
-            <div style="height: 200px; overflow: hidden;">
-              <iframe src="https://www.earthcam.com/usa/newyork/timessquare/?cam=tsrobo1" style="width: 100%; height: 100%; border: none;"></iframe>
-            </div>
+            <img src="fred.GIF"></img>
           </div>
         </div>
       </div>
@@ -117,23 +134,28 @@
     }
 
     function fetchWeather() {
-      fetch('https://api.open-meteo.com/v1/forecast?latitude=40.48&longitude=-88.99&current_weather=true')
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=40.48&longitude=-88.99&current_weather=true&temperature_unit=fahrenheit')
         .then(res => res.json())
         .then(data => {
           const weather = data.current_weather;
-          $('#weather').html(`${weather.temperature}°C, Wind: ${weather.windspeed} km/h`);
+          $('#weather').html(`${weather.temperature}&deg;F<br>Wind: ${weather.windspeed} mph`);
         });
     }
 
     function fetchSports() {
-      const feedUrl = 'https://www.espn.com/espn/rss/news';
-      fetch(feedUrl)
-        .then(response => response.text())
-        .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+      $('#sports').html('<li>Scores loading…</li>');
+      fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard')
+        .then(res => res.json())
         .then(data => {
-          const items = data.querySelectorAll("item");
-          const list = Array.from(items).slice(0, 5).map(item => `<li>• ${item.querySelector("title").textContent}</li>`);
-          document.getElementById("sports").innerHTML = list.join('');
+          const scores = data.events.slice(0, 5).map(event => {
+            const name = event.name;
+            const status = event.status.type.shortDetail;
+            return `<li>${name} - ${status}</li>`;
+          });
+          $('#sports').html(scores.join(''));
+        })
+        .catch(() => {
+          $('#sports').html('<li>Failed to load scores</li>');
         });
     }
 

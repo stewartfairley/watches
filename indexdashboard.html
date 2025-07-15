@@ -14,28 +14,22 @@
     .card {
       background-color: #1e1e1e;
       border: none;
+      height: 300px;
     }
     .card-title {
       color: #ffffff;
     }
     .clock {
-      font-size: 3em;
+      font-size: 4em;
       font-weight: bold;
       text-align: center;
       color: #00ffff;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-bottom: 0.5em;
     }
     #weather {
       font-size: 1.5em;
       color: #ffcc00;
       font-weight: bold;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       text-align: center;
     }
     #sports li {
@@ -45,17 +39,18 @@
     #history {
       color: #ffa07a;
     }
-    #funfact {
-      color: #90ee90;
+    #matrix {
+      font-family: monospace;
+      font-size: 1em;
+      color: #00ff00;
+      white-space: pre-line;
+      overflow: auto;
+      height: 100%;
     }
-    .webcam-wrapper iframe {
+    .webcam-wrapper img {
       width: 100%;
       height: 100%;
-      border: none;
-    }
-    .webcam-wrapper {
-      height: 100%;
-      min-height: 200px;
+      object-fit: cover;
     }
   </style>
 </head>
@@ -63,22 +58,13 @@
   <div class="container py-4">
     <div class="row row-cols-1 row-cols-md-3 g-4">
 
-      <!-- Clock -->
+      <!-- Clock + Weather -->
       <div class="col">
         <div class="card h-100">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Clock</h5>
-            <div class="clock flex-grow-1" id="clock"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Weather -->
-      <div class="col">
-        <div class="card h-100">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Weather (61704)</h5>
-            <div id="weather" class="flex-grow-1"></div>
+          <div class="card-body d-flex flex-column justify-content-center">
+            <h5 class="card-title">Time & Weather</h5>
+            <div class="clock" id="clock"></div>
+            <div id="weather"></div>
           </div>
         </div>
       </div>
@@ -87,18 +73,18 @@
       <div class="col">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">Sports Scores</h5>
+            <h5 class="card-title">Colorado Sports</h5>
             <ul id="sports" class="list-unstyled"></ul>
           </div>
         </div>
       </div>
 
-      <!-- Webcam -->
+      <!-- Animated GIF -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body webcam-wrapper">
-            <h5 class="card-title">Live Webcam</h5>
-            <img src="fred.GIF"></img>
+            <h5 class="card-title">Fred Cam</h5>
+            <img src="freddy.gif" alt="Freddy Running">
           </div>
         </div>
       </div>
@@ -113,12 +99,21 @@
         </div>
       </div>
 
-      <!-- Fun Fact -->
+      <!-- Matrix Code Stream -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">Random Fun Fact</h5>
-            <div id="funfact"></div>
+            <h5 class="card-title">Streaming Code</h5>
+            <div id="matrix"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spacer or Future Use -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <h5 class="card-title">(Empty)</h5>
           </div>
         </div>
       </div>
@@ -143,19 +138,18 @@
     }
 
     function fetchSports() {
-      $('#sports').html('<li>Scores loading…</li>');
-      fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard')
+      $('#sports').html('<li>Loading Colorado teams…</li>');
+      fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard')
         .then(res => res.json())
         .then(data => {
-          const scores = data.events.slice(0, 5).map(event => {
-            const name = event.name;
-            const status = event.status.type.shortDetail;
-            return `<li>${name} - ${status}</li>`;
+          const teams = ['Broncos', 'Nuggets', 'Rockies', 'Avalanche'];
+          let items = [];
+          data.events.forEach(event => {
+            if (teams.some(team => event.name.includes(team))) {
+              items.push(`<li>${event.name} - ${event.status.type.shortDetail}</li>`);
+            }
           });
-          $('#sports').html(scores.join(''));
-        })
-        .catch(() => {
-          $('#sports').html('<li>Failed to load scores</li>');
+          $('#sports').html(items.length ? items.join('') : '<li>No Colorado team games found</li>');
         });
     }
 
@@ -171,12 +165,12 @@
         });
     }
 
-    function fetchFunFact() {
-      fetch('https://api.chucknorris.io/jokes/random')
-        .then(res => res.json())
-        .then(data => {
-          $('#funfact').text(data.value);
-        });
+    function generateMatrixLines() {
+      const lines = [];
+      for (let i = 0; i < 20; i++) {
+        lines.push(Array.from({length: 30}, () => Math.random() > 0.5 ? '1' : '0').join(''));
+      }
+      $('#matrix').html(lines.join('\n'));
     }
 
     function refreshAll() {
@@ -184,13 +178,13 @@
       fetchWeather();
       fetchSports();
       fetchHistory();
-      fetchFunFact();
+      generateMatrixLines();
     }
 
     $(document).ready(() => {
       refreshAll();
-      setInterval(refreshAll, 5 * 60 * 1000); // Refresh every 5 minutes
-      setInterval(updateClock, 1000); // Update clock every second
+      setInterval(refreshAll, 5 * 60 * 1000);
+      setInterval(updateClock, 1000);
     });
   </script>
 </body>
