@@ -14,13 +14,15 @@
     .card {
       background-color: #1e1e1e;
       border: none;
-      height: 300px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
     .card-title {
       color: #ffffff;
     }
     .clock {
-      font-size: 4em;
+      font-size: 5em;
       font-weight: bold;
       text-align: center;
       color: #00ffff;
@@ -38,6 +40,7 @@
     }
     #history {
       color: #ffa07a;
+      overflow-y: auto;
     }
     #matrix {
       font-family: monospace;
@@ -59,6 +62,9 @@
     canvas {
       background-color: #000;
     }
+    .card-body {
+      flex: 1 1 auto;
+    }
   </style>
 </head>
 <body>
@@ -67,7 +73,7 @@
 
       <!-- Clock + Weather -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body d-flex flex-column justify-content-center">
             <h5 class="card-title">Time & Weather</h5>
             <div class="clock" id="clock"></div>
@@ -78,7 +84,7 @@
 
       <!-- Sports Scores -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body">
             <h5 class="card-title">Colorado Sports</h5>
             <ul id="sports" class="list-unstyled"></ul>
@@ -86,29 +92,9 @@
         </div>
       </div>
 
-      <!-- Live Trends Chart -->
-      <div class="col">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Live Trends</h5>
-            <canvas id="trendGraph"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- This Day in U.S. History -->
-      <div class="col">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">U.S. History</h5>
-            <div id="history"></div>
-          </div>
-        </div>
-      </div>
-
       <!-- Fred Cam (Animated GIF) -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body webcam-wrapper">
             <h5 class="card-title">Fred Cam</h5>
             <img src="freddy.gif" alt="Freddy Running">
@@ -116,12 +102,32 @@
         </div>
       </div>
 
+      <!-- This Day in History -->
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">This Day in History</h5>
+            <div id="history"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Reddit Top Photo -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body webcam-wrapper">
             <h5 class="card-title">Top Reddit Photo</h5>
             <img id="redditPhoto" src="" alt="Reddit Photo of the Day">
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Trends Chart -->
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Stew's Stocks</h5>
+            <canvas id="trendGraph"></canvas>
           </div>
         </div>
       </div>
@@ -162,13 +168,13 @@
     }
 
     function fetchHistory() {
-      fetch('https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all')
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      const day = today.getDate();
+      fetch(`https://byabbe.se/on-this-day/${month}/${day}/events.json`)
         .then(res => res.json())
         .then(data => {
-          const items = data.events
-            .filter(e => e.pages.some(p => p.description && p.description.toLowerCase().includes("united states")))
-            .slice(0, 3)
-            .map(e => `• ${e.year}: ${e.text}`);
+          const items = data.events.slice(0, 3).map(e => `• ${e.year}: ${e.description}`);
           $('#history').html(items.join('<br>'));
         });
     }
