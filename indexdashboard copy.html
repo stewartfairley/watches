@@ -14,13 +14,15 @@
     .card {
       background-color: #1e1e1e;
       border: none;
-      height: 300px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
     .card-title {
       color: #ffffff;
     }
     .clock {
-      font-size: 4em;
+      font-size: 5em;
       font-weight: bold;
       text-align: center;
       color: #00ffff;
@@ -38,6 +40,7 @@
     }
     #history {
       color: #ffa07a;
+      overflow-y: auto;
     }
     #matrix {
       font-family: monospace;
@@ -59,6 +62,9 @@
     canvas {
       background-color: #000;
     }
+    .card-body {
+      flex: 1 1 auto;
+    }
   </style>
 </head>
 <body>
@@ -67,7 +73,7 @@
 
       <!-- Clock + Weather -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body d-flex flex-column justify-content-center">
             <h5 class="card-title">Time & Weather</h5>
             <div class="clock" id="clock"></div>
@@ -78,7 +84,7 @@
 
       <!-- Sports Scores -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body">
             <h5 class="card-title">Colorado Sports</h5>
             <ul id="sports" class="list-unstyled"></ul>
@@ -86,9 +92,9 @@
         </div>
       </div>
 
-      <!-- Animated GIF -->
+      <!-- Fred Cam (Animated GIF) -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body webcam-wrapper">
             <h5 class="card-title">Fred Cam</h5>
             <img src="freddy.gif" alt="Freddy Running">
@@ -98,7 +104,7 @@
 
       <!-- This Day in History -->
       <div class="col">
-        <div class="card h-100">
+        <div class="card">
           <div class="card-body">
             <h5 class="card-title">This Day in History</h5>
             <div id="history"></div>
@@ -106,22 +112,22 @@
         </div>
       </div>
 
-      <!-- Streaming Data Chart -->
+      <!-- Reddit Top Photo -->
       <div class="col">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Live Trends</h5>
-            <canvas id="trendGraph"></canvas>
+        <div class="card">
+          <div class="card-body webcam-wrapper">
+            <h5 class="card-title">Top Reddit Photo</h5>
+            <img id="redditPhoto" src="" alt="Reddit Photo of the Day">
           </div>
         </div>
       </div>
 
-      <!-- Rotating Webcam Snapshot -->
+      <!-- Live Trends Chart -->
       <div class="col">
-        <div class="card h-100">
-          <div class="card-body webcam-wrapper">
-            <h5 class="card-title">Random Webcam</h5>
-            <img id="rotatingWebcam" src="" alt="Webcam Feed">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Stew's Stocks</h5>
+            <canvas id="trendGraph"></canvas>
           </div>
         </div>
       </div>
@@ -181,18 +187,13 @@
       chart.update();
     }
 
-    function rotateWebcam() {
-      const cams = [
-        'https://images-webcams.windy.com/04/1593921004/current/full/1593921004.jpg',
-        'https://images-webcams.windy.com/46/1507635846/current/full/1507635846.jpg',
-        'https://images-webcams.windy.com/54/1538468254/current/full/1538468254.jpg'
-      ];
-      const img = document.getElementById('rotatingWebcam');
-      let index = 0;
-      setInterval(() => {
-        img.src = cams[index] + '?' + new Date().getTime();
-        index = (index + 1) % cams.length;
-      }, 10000);
+    function fetchRedditPhoto() {
+      fetch('https://www.reddit.com/r/photographs/top/.json?t=day&limit=1')
+        .then(res => res.json())
+        .then(data => {
+          const imgUrl = data.data.children[0].data.url;
+          $('#redditPhoto').attr('src', imgUrl);
+        });
     }
 
     function refreshAll(chart) {
@@ -200,6 +201,7 @@
       fetchWeather();
       fetchSports();
       fetchHistory();
+      fetchRedditPhoto();
       updateChart(chart);
     }
 
@@ -229,7 +231,6 @@
       refreshAll(chart);
       setInterval(() => refreshAll(chart), 5000);
       setInterval(updateClock, 1000);
-      rotateWebcam();
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

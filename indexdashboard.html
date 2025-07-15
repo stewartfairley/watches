@@ -116,7 +116,7 @@
       <div class="col">
         <div class="card">
           <div class="card-body webcam-wrapper">
-            <h5 class="card-title">Top Reddit Photo</h5>
+            <h5 class="card-title">NASA Photo of the Day</h5>
             <img id="redditPhoto" src="" alt="Reddit Photo of the Day">
           </div>
         </div>
@@ -186,15 +186,21 @@
       chart.data.datasets[0].data = trendData;
       chart.update();
     }
+function fetchRedditPhoto() {
+  fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
+    .then(res => res.json())
+    .then(data => {
+      if (data.media_type === 'image') {
+        $('#redditPhoto').attr('src', data.url);
+      } else {
+        $('#redditPhoto').attr('alt', 'NASA photo not available today');
+      }
+    })
+    .catch(() => {
+      $('#redditPhoto').attr('alt', 'Failed to load image');
+    });
+}
 
-    function fetchRedditPhoto() {
-      fetch('https://www.reddit.com/r/photographs/top/.json?t=day&limit=1')
-        .then(res => res.json())
-        .then(data => {
-          const imgUrl = data.data.children[0].data.url;
-          $('#redditPhoto').attr('src', imgUrl);
-        });
-    }
 
     function refreshAll(chart) {
       updateClock();
