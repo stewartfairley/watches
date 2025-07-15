@@ -86,27 +86,7 @@
         </div>
       </div>
 
-      <!-- Animated GIF -->
-      <div class="col">
-        <div class="card h-100">
-          <div class="card-body webcam-wrapper">
-            <h5 class="card-title">Fred Cam</h5>
-            <img src="freddy.gif" alt="Freddy Running">
-          </div>
-        </div>
-      </div>
-
-      <!-- This Day in History -->
-      <div class="col">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">This Day in History</h5>
-            <div id="history"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Streaming Data Chart -->
+      <!-- Live Trends Chart -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body">
@@ -116,12 +96,32 @@
         </div>
       </div>
 
-      <!-- Rotating Webcam Snapshot -->
+      <!-- This Day in U.S. History -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">U.S. History</h5>
+            <div id="history"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fred Cam (Animated GIF) -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body webcam-wrapper">
-            <h5 class="card-title">Random Webcam</h5>
-            <img id="rotatingWebcam" src="" alt="Webcam Feed">
+            <h5 class="card-title">Fred Cam</h5>
+            <img src="freddy.gif" alt="Freddy Running">
+          </div>
+        </div>
+      </div>
+
+      <!-- Reddit Top Photo -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body webcam-wrapper">
+            <h5 class="card-title">Top Reddit Photo</h5>
+            <img id="redditPhoto" src="" alt="Reddit Photo of the Day">
           </div>
         </div>
       </div>
@@ -162,13 +162,13 @@
     }
 
     function fetchHistory() {
-      const today = new Date();
-      const month = today.getMonth() + 1;
-      const day = today.getDate();
-      fetch(`https://byabbe.se/on-this-day/${month}/${day}/events.json`)
+      fetch('https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all')
         .then(res => res.json())
         .then(data => {
-          const items = data.events.slice(0, 3).map(e => `• ${e.year}: ${e.description}`);
+          const items = data.events
+            .filter(e => e.pages.some(p => p.description && p.description.toLowerCase().includes("united states")))
+            .slice(0, 3)
+            .map(e => `• ${e.year}: ${e.text}`);
           $('#history').html(items.join('<br>'));
         });
     }
@@ -181,18 +181,13 @@
       chart.update();
     }
 
-    function rotateWebcam() {
-      const cams = [
-        'https://images-webcams.windy.com/04/1593921004/current/full/1593921004.jpg',
-        'https://images-webcams.windy.com/46/1507635846/current/full/1507635846.jpg',
-        'https://images-webcams.windy.com/54/1538468254/current/full/1538468254.jpg'
-      ];
-      const img = document.getElementById('rotatingWebcam');
-      let index = 0;
-      setInterval(() => {
-        img.src = cams[index] + '?' + new Date().getTime();
-        index = (index + 1) % cams.length;
-      }, 10000);
+    function fetchRedditPhoto() {
+      fetch('https://www.reddit.com/r/photographs/top/.json?t=day&limit=1')
+        .then(res => res.json())
+        .then(data => {
+          const imgUrl = data.data.children[0].data.url;
+          $('#redditPhoto').attr('src', imgUrl);
+        });
     }
 
     function refreshAll(chart) {
@@ -200,6 +195,7 @@
       fetchWeather();
       fetchSports();
       fetchHistory();
+      fetchRedditPhoto();
       updateChart(chart);
     }
 
@@ -229,7 +225,6 @@
       refreshAll(chart);
       setInterval(() => refreshAll(chart), 5000);
       setInterval(updateClock, 1000);
-      rotateWebcam();
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -14,28 +14,22 @@
     .card {
       background-color: #1e1e1e;
       border: none;
+      height: 300px;
     }
     .card-title {
       color: #ffffff;
     }
     .clock {
-      font-size: 3em;
+      font-size: 4em;
       font-weight: bold;
       text-align: center;
       color: #00ffff;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-bottom: 0.5em;
     }
     #weather {
       font-size: 1.5em;
       color: #ffcc00;
       font-weight: bold;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       text-align: center;
     }
     #sports li {
@@ -45,17 +39,25 @@
     #history {
       color: #ffa07a;
     }
-    #funfact {
-      color: #90ee90;
+    #matrix {
+      font-family: monospace;
+      font-size: 1em;
+      color: #00ff00;
+      white-space: pre-line;
+      overflow: auto;
+      height: 100%;
     }
-    .webcam-wrapper iframe {
+    .webcam-wrapper img {
       width: 100%;
       height: 100%;
-      border: none;
+      object-fit: cover;
     }
-    .webcam-wrapper {
+    #trendGraph {
       height: 100%;
-      min-height: 200px;
+      width: 100%;
+    }
+    canvas {
+      background-color: #000;
     }
   </style>
 </head>
@@ -63,22 +65,13 @@
   <div class="container py-4">
     <div class="row row-cols-1 row-cols-md-3 g-4">
 
-      <!-- Clock -->
+      <!-- Clock + Weather -->
       <div class="col">
         <div class="card h-100">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Clock</h5>
-            <div class="clock flex-grow-1" id="clock"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Weather -->
-      <div class="col">
-        <div class="card h-100">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Weather (61704)</h5>
-            <div id="weather" class="flex-grow-1"></div>
+          <div class="card-body d-flex flex-column justify-content-center">
+            <h5 class="card-title">Time & Weather</h5>
+            <div class="clock" id="clock"></div>
+            <div id="weather"></div>
           </div>
         </div>
       </div>
@@ -87,18 +80,18 @@
       <div class="col">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">Sports Scores</h5>
+            <h5 class="card-title">Colorado Sports</h5>
             <ul id="sports" class="list-unstyled"></ul>
           </div>
         </div>
       </div>
 
-      <!-- Webcam -->
+      <!-- Animated GIF -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body webcam-wrapper">
-            <h5 class="card-title">Live Webcam</h5>
-            <img src="fred.GIF"></img>
+            <h5 class="card-title">Fred Cam</h5>
+            <img src="freddy.gif" alt="Freddy Running">
           </div>
         </div>
       </div>
@@ -113,12 +106,22 @@
         </div>
       </div>
 
-      <!-- Fun Fact -->
+      <!-- Streaming Data Chart -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">Random Fun Fact</h5>
-            <div id="funfact"></div>
+            <h5 class="card-title">Live Trends</h5>
+            <canvas id="trendGraph"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rotating Webcam Snapshot -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body webcam-wrapper">
+            <h5 class="card-title">Random Webcam</h5>
+            <img id="rotatingWebcam" src="" alt="Webcam Feed">
           </div>
         </div>
       </div>
@@ -143,20 +146,19 @@
     }
 
     function fetchSports() {
-      $('#sports').html('<li>Scores loading…</li>');
-      fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard')
-        .then(res => res.json())
-        .then(data => {
-          const scores = data.events.slice(0, 5).map(event => {
-            const name = event.name;
-            const status = event.status.type.shortDetail;
-            return `<li>${name} - ${status}</li>`;
-          });
-          $('#sports').html(scores.join(''));
-        })
-        .catch(() => {
-          $('#sports').html('<li>Failed to load scores</li>');
-        });
+      $('#sports').html('<li>Loading Colorado teams…</li>');
+      Promise.all([
+        fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard').then(res => res.json()),
+        fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard').then(res => res.json()),
+        fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard').then(res => res.json()),
+        fetch('https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard').then(res => res.json())
+      ]).then(([nfl, nba, mlb, nhl]) => {
+        const teams = ['Broncos', 'Nuggets', 'Rockies', 'Avalanche'];
+        const allEvents = [...nfl.events, ...nba.events, ...mlb.events, ...nhl.events];
+        const items = allEvents.filter(event => teams.some(team => event.name.includes(team)))
+                               .map(event => `<li>${event.name} - ${event.status.type.shortDetail}</li>`);
+        $('#sports').html(items.length ? items.join('') : '<li>No Colorado team games found</li>');
+      });
     }
 
     function fetchHistory() {
@@ -171,27 +173,65 @@
         });
     }
 
-    function fetchFunFact() {
-      fetch('https://api.chucknorris.io/jokes/random')
-        .then(res => res.json())
-        .then(data => {
-          $('#funfact').text(data.value);
-        });
+    let trendData = [];
+    function updateChart(chart) {
+      trendData.push(Math.floor(Math.random() * 100));
+      if (trendData.length > 20) trendData.shift();
+      chart.data.datasets[0].data = trendData;
+      chart.update();
     }
 
-    function refreshAll() {
+    function rotateWebcam() {
+      const cams = [
+        'https://images-webcams.windy.com/04/1593921004/current/full/1593921004.jpg',
+        'https://images-webcams.windy.com/46/1507635846/current/full/1507635846.jpg',
+        'https://images-webcams.windy.com/54/1538468254/current/full/1538468254.jpg'
+      ];
+      const img = document.getElementById('rotatingWebcam');
+      let index = 0;
+      setInterval(() => {
+        img.src = cams[index] + '?' + new Date().getTime();
+        index = (index + 1) % cams.length;
+      }, 10000);
+    }
+
+    function refreshAll(chart) {
       updateClock();
       fetchWeather();
       fetchSports();
       fetchHistory();
-      fetchFunFact();
+      updateChart(chart);
     }
 
     $(document).ready(() => {
-      refreshAll();
-      setInterval(refreshAll, 5 * 60 * 1000); // Refresh every 5 minutes
-      setInterval(updateClock, 1000); // Update clock every second
+      const ctx = document.getElementById('trendGraph').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 20}, (_, i) => i + 1),
+          datasets: [{
+            label: 'Live Metric',
+            data: [],
+            borderColor: '#00ff00',
+            backgroundColor: 'rgba(0,255,0,0.1)',
+            fill: true
+          }]
+        },
+        options: {
+          animation: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+      refreshAll(chart);
+      setInterval(() => refreshAll(chart), 5000);
+      setInterval(updateClock, 1000);
+      rotateWebcam();
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
