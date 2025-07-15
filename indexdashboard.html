@@ -52,6 +52,13 @@
       height: 100%;
       object-fit: cover;
     }
+    #trendGraph {
+      height: 100%;
+      width: 100%;
+    }
+    canvas {
+      background-color: #000;
+    }
   </style>
 </head>
 <body>
@@ -99,21 +106,22 @@
         </div>
       </div>
 
-      <!-- Matrix Code Stream -->
+      <!-- Streaming Data Chart -->
       <div class="col">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">Streaming Code</h5>
-            <div id="matrix"></div>
+            <h5 class="card-title">Live Trends</h5>
+            <canvas id="trendGraph"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- Spacer or Future Use -->
+      <!-- Rotating Webcam Snapshot -->
       <div class="col">
         <div class="card h-100">
-          <div class="card-body d-flex align-items-center justify-content-center">
-            <h5 class="card-title">(Empty)</h5>
+          <div class="card-body webcam-wrapper">
+            <h5 class="card-title">Random Webcam</h5>
+            <img id="rotatingWebcam" src="" alt="Webcam Feed">
           </div>
         </div>
       </div>
@@ -139,18 +147,18 @@
 
     function fetchSports() {
       $('#sports').html('<li>Loading Colorado teams…</li>');
-      fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard')
-        .then(res => res.json())
-        .then(data => {
-          const teams = ['Broncos', 'Nuggets', 'Rockies', 'Avalanche'];
-          let items = [];
-          data.events.forEach(event => {
-            if (teams.some(team => event.name.includes(team))) {
-              items.push(`<li>${event.name} - ${event.status.type.shortDetail}</li>`);
-            }
-          });
-          $('#sports').html(items.length ? items.join('') : '<li>No Colorado team games found</li>');
-        });
+      Promise.all([
+        fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard').then(res => res.json()),
+        fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard').then(res => res.json()),
+        fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard').then(res => res.json()),
+        fetch('https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard').then(res => res.json())
+      ]).then(([nfl, nba, mlb, nhl]) => {
+        const teams = ['Broncos', 'Nuggets', 'Rockies', 'Avalanche'];
+        const allEvents = [...nfl.events, ...nba.events, ...mlb.events, ...nhl.events];
+        const items = allEvents.filter(event => teams.some(team => event.name.includes(team)))
+                               .map(event => `<li>${event.name} - ${event.status.type.shortDetail}</li>`);
+        $('#sports').html(items.length ? items.join('') : '<li>No Colorado team games found</li>');
+      });
     }
 
     function fetchHistory() {
@@ -165,27 +173,65 @@
         });
     }
 
-    function generateMatrixLines() {
-      const lines = [];
-      for (let i = 0; i < 20; i++) {
-        lines.push(Array.from({length: 30}, () => Math.random() > 0.5 ? '1' : '0').join(''));
-      }
-      $('#matrix').html(lines.join('\n'));
+    let trendData = [];
+    function updateChart(chart) {
+      trendData.push(Math.floor(Math.random() * 100));
+      if (trendData.length > 20) trendData.shift();
+      chart.data.datasets[0].data = trendData;
+      chart.update();
     }
 
-    function refreshAll() {
+    function rotateWebcam() {
+      const cams = [
+        'https://images-webcams.windy.com/04/1593921004/current/full/1593921004.jpg',
+        'https://images-webcams.windy.com/46/1507635846/current/full/1507635846.jpg',
+        'https://images-webcams.windy.com/54/1538468254/current/full/1538468254.jpg'
+      ];
+      const img = document.getElementById('rotatingWebcam');
+      let index = 0;
+      setInterval(() => {
+        img.src = cams[index] + '?' + new Date().getTime();
+        index = (index + 1) % cams.length;
+      }, 10000);
+    }
+
+    function refreshAll(chart) {
       updateClock();
       fetchWeather();
       fetchSports();
       fetchHistory();
-      generateMatrixLines();
+      updateChart(chart);
     }
 
     $(document).ready(() => {
-      refreshAll();
-      setInterval(refreshAll, 5 * 60 * 1000);
+      const ctx = document.getElementById('trendGraph').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 20}, (_, i) => i + 1),
+          datasets: [{
+            label: 'Live Metric',
+            data: [],
+            borderColor: '#00ff00',
+            backgroundColor: 'rgba(0,255,0,0.1)',
+            fill: true
+          }]
+        },
+        options: {
+          animation: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+      refreshAll(chart);
+      setInterval(() => refreshAll(chart), 5000);
       setInterval(updateClock, 1000);
+      rotateWebcam();
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
