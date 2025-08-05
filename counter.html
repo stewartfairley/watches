@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nicolette Tracker</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    #total,
+    #remaining,
+    #used,
+    #substitute-count,
+    #pace-message {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    #lozenge-button,
+    #substitute-button {
+      font-size: 2rem;
+      padding: 2rem 4rem;
+      border: none;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s;
+      margin: 0.5rem 0;
+    }
+
+    #lozenge-button {
+      background-color: #28a745;
+    }
+
+    #lozenge-button:active {
+      background-color: #218838;
+    }
+
+    #substitute-button {
+      background-color: #17a2b8;
+    }
+
+    #substitute-button:active {
+      background-color: #138496;
+    }
+
+    #setup {
+      margin-bottom: 2rem;
+    }
+
+    input[type="number"] {
+      padding: 0.5rem;
+      font-size: 1.2rem;
+      width: 100px;
+      text-align: center;
+    }
+
+    button#set {
+      margin-left: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="setup">
+    <label for="startCount">Starting lozenges:</label>
+    <input type="number" id="startCount" min="1" />
+    <button id="set">Set</button>
+  </div>
+
+  <div id="total">Total Spent: $0.00</div>
+  <div id="used">Lozenges Used: 0</div>
+  <div id="remaining">Lozenges Remaining: 0</div>
+  <div id="substitute-count">Substitutes Used: 0</div>
+  <div id="pace-message">Pacing Info: —</div>
+
+  <button id="lozenge-button" disabled>Tap to Use</button>
+  <button id="substitute-button">Substitute</button>
+
+  <script>
+    let totalAllotted = 0;
+    let used = 0;
+    let total = 0;
+    let substitutes = 0;
+    const costPerLozenge = 0.65;
+
+    const totalDisplay = document.getElementById('total');
+    const usedDisplay = document.getElementById('used');
+    const remainingDisplay = document.getElementById('remaining');
+    const substituteDisplay = document.getElementById('substitute-count');
+    const paceDisplay = document.getElementById('pace-message');
+    const lozengeButton = document.getElementById('lozenge-button');
+    const substituteButton = document.getElementById('substitute-button');
+    const setButton = document.getElementById('set');
+    const input = document.getElementById('startCount');
+
+    setButton.addEventListener('click', () => {
+      const start = parseInt(input.value);
+      if (!isNaN(start) && start > 0) {
+        totalAllotted = start;
+        used = 0;
+        total = 0;
+        substitutes = 0;
+        lozengeButton.disabled = false;
+        updateDisplay();
+      }
+    });
+
+    lozengeButton.addEventListener('click', () => {
+      if (used < totalAllotted) {
+        used++;
+        total += costPerLozenge;
+        updateDisplay();
+        if (used === totalAllotted) {
+          lozengeButton.disabled = true;
+        }
+      }
+    });
+
+    substituteButton.addEventListener('click', () => {
+      substitutes++;
+      updateDisplay();
+    });
+
+    function updateDisplay() {
+      const remaining = totalAllotted - used;
+      totalDisplay.textContent = `Total Spent: $${total.toFixed(2)}`;
+      usedDisplay.textContent = `Lozenges Used: ${used}`;
+      remainingDisplay.textContent = `Lozenges Remaining: ${remaining}`;
+      substituteDisplay.textContent = `Substitutes Used: ${substitutes}`;
+      paceDisplay.textContent = getPacingMessage(remaining);
+    }
+
+    function getPacingMessage(remaining) {
+      const now = new Date();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const currentDecimalHour = hour + minute / 60;
+
+      const startHour = 6;
+      const endHour = 21; // 9 PM
+
+      if (currentDecimalHour < startHour) {
+        return "You're outside the pacing window (before 6am).";
+      } else if (currentDecimalHour >= endHour) {
+        return "You're outside the pacing window (after 9pm).";
+      } else {
+        const hoursLeft = endHour - currentDecimalHour;
+        if (remaining <= 0) {
+          return "All allotted lozenges used for the day.";
+        } else {
+          const pace = remaining / hoursLeft;
+          return `Try to stay under ${pace.toFixed(2)} lozenges/hour for the rest of the day.`;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
