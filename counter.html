@@ -22,22 +22,24 @@
     #remaining,
     #used,
     #substitute-count,
-    #pace-message {
+    #pace-message,
+    #stopwatch {
       font-size: 1.5rem;
       margin-bottom: 1rem;
     }
 
     #lozenge-button,
-    #substitute-button {
+    #substitute-button,
+    #reset-button {
       font-size: 2rem;
-      padding: 2rem 4rem;
+      padding: 1.2rem 2rem;
       border: none;
       border-radius: 20px;
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       transition: background-color 0.3s;
-      margin: 0.5rem 0;
+      margin: 0.5rem;
     }
 
     #lozenge-button {
@@ -56,6 +58,14 @@
       background-color: #138496;
     }
 
+    #reset-button {
+      background-color: #dc3545;
+    }
+
+    #reset-button:active {
+      background-color: #bd2130;
+    }
+
     #setup {
       margin-bottom: 2rem;
     }
@@ -72,6 +82,13 @@
       padding: 0.5rem 1rem;
       font-size: 1rem;
     }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -86,87 +103,135 @@
   <div id="remaining">Lozenges Remaining: 0</div>
   <div id="substitute-count">Substitutes Used: 0</div>
   <div id="pace-message">Pacing Info: —</div>
+  <div id="stopwatch">Time Since Last Lozenge: —</div>
 
-  <button id="lozenge-button" disabled>Tap to Use</button>
-  <button id="substitute-button">Substitute</button>
+  <div class="button-row">
+    <button id="lozenge-button" disabled>Tap to Use</button>
+    <button id="substitute-button">Substitute</button>
+    <button id="reset-button">Reset</button>
+  </div>
+<script>
+  let totalAllotted = 0;
+  let used = 0;
+  let total = 0;
+  let substitutes = 0;
+  let stopwatchInterval = null;
+  let stopwatchStart = null;
 
-  <script>
-    let totalAllotted = 0;
-    let used = 0;
-    let total = 0;
-    let substitutes = 0;
-    const costPerLozenge = 0.65;
+  const totalDisplay = document.getElementById('total');
+  const usedDisplay = document.getElementById('used');
+  const remainingDisplay = document.getElementById('remaining');
+  const substituteDisplay = document.getElementById('substitute-count');
+  const paceDisplay = document.getElementById('pace-message');
+  const stopwatchDisplay = document.getElementById('stopwatch');
 
-    const totalDisplay = document.getElementById('total');
-    const usedDisplay = document.getElementById('used');
-    const remainingDisplay = document.getElementById('remaining');
-    const substituteDisplay = document.getElementById('substitute-count');
-    const paceDisplay = document.getElementById('pace-message');
-    const lozengeButton = document.getElementById('lozenge-button');
-    const substituteButton = document.getElementById('substitute-button');
-    const setButton = document.getElementById('set');
-    const input = document.getElementById('startCount');
+  const lozengeButton = document.getElementById('lozenge-button');
+  const substituteButton = document.getElementById('substitute-button');
+  const resetBtn = document.getElementById('reset-button');
+  const setButton = document.getElementById('set');
+  const input = document.getElementById('startCount');
 
-    setButton.addEventListener('click', () => {
-      const start = parseInt(input.value);
-      if (!isNaN(start) && start > 0) {
-        totalAllotted = start;
-        used = 0;
-        total = 0;
-        substitutes = 0;
-        lozengeButton.disabled = false;
-        updateDisplay();
-      }
-    });
-
-    lozengeButton.addEventListener('click', () => {
-      if (used < totalAllotted) {
-        used++;
-        total += costPerLozenge;
-        updateDisplay();
-        if (used === totalAllotted) {
-          lozengeButton.disabled = true;
-        }
-      }
-    });
-
-    substituteButton.addEventListener('click', () => {
-      substitutes++;
+  setButton.addEventListener('click', () => {
+    const start = parseInt(input.value);
+    if (!isNaN(start) && start > 0) {
+      totalAllotted = start;
+      used = 0;
+      total = 0;
+      substitutes = 0;
+      lozengeButton.disabled = false;
+      stopStopwatch(); // Ensure stopwatch is cleared
+      stopwatchDisplay.textContent = "Time Since Last Lozenge: —";
       updateDisplay();
-    });
-
-    function updateDisplay() {
-      const remaining = totalAllotted - used;
-      totalDisplay.textContent = `Total Spent: $${total.toFixed(2)}`;
-      usedDisplay.textContent = `Lozenges Used: ${used}`;
-      remainingDisplay.textContent = `Lozenges Remaining: ${remaining}`;
-      substituteDisplay.textContent = `Substitutes Used: ${substitutes}`;
-      paceDisplay.textContent = getPacingMessage(remaining);
     }
+  });
 
-    function getPacingMessage(remaining) {
-      const now = new Date();
-      const hour = now.getHours();
-      const minute = now.getMinutes();
-      const currentDecimalHour = hour + minute / 60;
-
-      const startHour = 6;
-      const endHour = 21; // 9 PM
-
-      if (currentDecimalHour < startHour) {
-        return "You're outside the pacing window (before 6am).";
-      } else if (currentDecimalHour >= endHour) {
-        return "You're outside the pacing window (after 9pm).";
-      } else {
-        const hoursLeft = endHour - currentDecimalHour;
-        if (remaining <= 0) {
-          return "All allotted lozenges used for the day.";
-        } else {
-          const pace = remaining / hoursLeft;
-          return `Try to stay under ${pace.toFixed(2)} lozenges/hour for the rest of the day.`;
-        }
+  lozengeButton.addEventListener('click', () => {
+    if (used < totalAllotted) {
+      used++;
+      total += 0.65;
+      startStopwatch(); // Start stopwatch on use
+      updateDisplay();
+      if (used === totalAllotted) {
+        lozengeButton.disabled = true;
       }
     }
-  </script>
+  });
+
+  substituteButton.addEventListener('click', () => {
+    substitutes++;
+    updateDisplay();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    totalAllotted = 0;
+    used = 0;
+    total = 0;
+    substitutes = 0;
+    lozengeButton.disabled = true;
+    input.value = '';
+    stopStopwatch();
+    stopwatchDisplay.textContent = "Time Since Last Lozenge: —";
+    updateDisplay();
+  });
+
+  function updateDisplay() {
+    const remaining = totalAllotted - used;
+    totalDisplay.textContent = `Total Spent: $${total.toFixed(2)}`;
+    usedDisplay.textContent = `Lozenges Used: ${used}`;
+    remainingDisplay.textContent = `Lozenges Remaining: ${remaining}`;
+    substituteDisplay.textContent = `Substitutes Used: ${substitutes}`;
+    paceDisplay.textContent = getPacingMessage(remaining);
+  }
+
+  function getPacingMessage(remaining) {
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const currentDecimalHour = hour + minute / 60;
+
+    const startHour = 6;
+    const endHour = 21;
+
+    if (currentDecimalHour < startHour) {
+      return "You're outside the pacing window (before 6am).";
+    } else if (currentDecimalHour >= endHour) {
+      return "You're outside the pacing window (after 9pm).";
+    } else {
+      const hoursLeft = endHour - currentDecimalHour;
+      if (remaining <= 0) {
+        return "All allotted lozenges used for the day.";
+      } else {
+        const pace = remaining / hoursLeft;
+        return `Try to stay under ${pace.toFixed(2)} lozenges/hour for the rest of the day.`;
+      }
+    }
+  }
+
+  function startStopwatch() {
+    stopwatchStart = Date.now();
+    if (stopwatchInterval) clearInterval(stopwatchInterval);
+
+    stopwatchInterval = setInterval(() => {
+      const elapsed = Date.now() - stopwatchStart;
+
+      const milliseconds = Math.floor((elapsed % 1000) / 10); // 2 digits
+      const seconds = Math.floor(elapsed / 1000) % 60;
+      const minutes = Math.floor(elapsed / 60000) % 60;
+      const hours = Math.floor(elapsed / 3600000);
+
+      stopwatchDisplay.textContent =
+        `Time Since Last Lozenge: ${pad(hours)}:${pad(minutes)}:${pad(seconds)}:${pad(milliseconds, 2)}`;
+    }, 33); // refresh ~30 fps
+  }
+
+  function stopStopwatch() {
+    if (stopwatchInterval) clearInterval(stopwatchInterval);
+    stopwatchInterval = null;
+  }
+
+  function pad(num, length = 2) {
+    return num.toString().padStart(length, '0');
+  }
+</script>
 </body>
 </html>
