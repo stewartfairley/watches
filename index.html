@@ -80,6 +80,16 @@ const filters = [
 ];
 
 
+// Metadata researched 2026-09-18 for the September 17 additions.
+// Casio dimensions: https://www.casio.com/intl/watches/casio/product.AE-1200WH-1AV/
+// Vostok specifications: https://meranom.com/en/amphibian-classic/420/vostok-watch-amphibian-classic-420059.html
+// Militado specifications: https://www.militadowatch.com/products/militado-36mm-st1701-automatic-watch-ml11-1921-tribute
+// VK64 layout: https://www.timemodule.com/en/product_line_up/quartz/chronograph/premium_chronograph_VK/
+// Best guesses authorized by the owner: Casio production year/country;
+// S2 VK64 identification and case/lug dimensions; Vostok production/acquisition
+// years; Militado production/acquisition years. Model matches are based on photos.
+// The purple Sanda already has the same specifications as the standard Tank.
+
     const watches = [
  { "make":"Armitron", "model":"40/8465BRGP \"Griffy\"", "type":"Digital", "movement":"Quartz", "movementName":"", "lugWidth":14, "diameter":34.0, "madeIn":"China", "yearMade":"2025", "yearAcquired":"2025", "notes":"Uses CR1616 battery", "img":"images/armitron.jpg?v=15d362ca659b" },
 { "make":"Casio", "model":"G-Shock Solar GW-M5610BC", "type":"Digital", "movement":"Quartz", "movementName":"", "lugWidth":20, "diameter":40.0, "madeIn":"China", "yearMade":"2020", "yearAcquired":"2020", "notes":"Adapter for 20 mm straps added.  Solar, radio time sync, JDM modle", "img":"images/casio.jpg?v=9eb1dfaa7d92" },
@@ -117,10 +127,10 @@ const filters = [
 { "make":"Tudor", "model":"Black Bay 58", "type":"Dive", "movement":"Automatic", "movementName":"MT5402", "lugWidth":20, "diameter":39.0, "madeIn":"Switzerland", "yearMade":"2021", "yearAcquired":"2021", "notes":"", "img":"images/tudor.jpg?v=a3aff704a18e" },
 { "make":"Zeppelin", "model":"Hindenburg Moonphase / 7036-3", "type":"Dress", "movement":"Quartz", "movementName":"Miyota 6P80", "lugWidth":20, "diameter":40.0, "madeIn":"Germany", "yearMade":"2019", "yearAcquired":"2019", "notes":"Moonphase; week # of year, day/date subdials", "img":"images/zep.jpg?v=e1fe491b33fe" },
 { "make":"Sanda", "model":"Tank - Purple Strap (2)", "type":"Dress", "movement":"Quartz", "movementName":"", "lugWidth":20, "diameter":24.0, "madeIn":"China", "yearMade":"2025", "yearAcquired":"2025", "notes":"", "img":"images/sanda-purple-2.jpg" },
-{ "make":"Casio", "model":"AE1200WH", "type":"Unknown", "movement":"Unknown", "movementName":"", "lugWidth":null, "diameter":null, "madeIn":"Unknown", "yearMade":"Unknown", "yearAcquired":"2019", "notes":"Added tinted film. Colareb leather strap.", "img":"images/casio-ae1200wh.jpg" },
-{ "make":"S2 Custom Build", "model":"Mechaquartz (2026)", "type":"Unknown", "movement":"Quartz", "movementName":"Seiko mechaquartz", "lugWidth":null, "diameter":null, "madeIn":"Unknown", "yearMade":"2026", "yearAcquired":"Unknown", "notes":"", "img":"images/s2-mechaquartz-2026.jpg" },
-{ "make":"Vostok", "model":"Amphibia", "type":"Unknown", "movement":"Unknown", "movementName":"", "lugWidth":null, "diameter":null, "madeIn":"Unknown", "yearMade":"Unknown", "yearAcquired":"Unknown", "notes":"Italian rubber strap (brand unknown). Bezel aged using vinegar and a hard-boiled egg.", "img":"images/vostok-amphibia.jpg" },
-{ "make":"Militado", "model":"Unknown", "type":"Unknown", "movement":"Unknown", "movementName":"", "lugWidth":null, "diameter":null, "madeIn":"Unknown", "yearMade":"Unknown", "yearAcquired":"Unknown", "notes":"First watch was defective; a replacement was sent. Repaired the original, was told to keep it, and gave it to N.", "img":"images/militado.jpg" },
+{ "make":"Casio", "model":"AE1200WH", "type":"Digital", "movement":"Quartz", "movementName":"Casio 3299", "lugWidth":18, "diameter":42.1, "madeIn":"China", "yearMade":"2019", "yearAcquired":"2019", "notes":"Added tinted film. Colareb leather strap.", "img":"images/casio-ae1200wh.jpg" },
+{ "make":"S2 Custom Build", "model":"Mechaquartz (2026)", "type":"Chronograph", "movement":"Quartz", "movementName":"Seiko VK64 Mechaquartz", "lugWidth":20, "diameter":40, "madeIn":"USA", "yearMade":"2026", "yearAcquired":"2026", "notes":"", "img":"images/s2-mechaquartz-2026.jpg" },
+{ "make":"Vostok", "model":"Amphibia 420059", "type":"Dive", "movement":"Automatic", "movementName":"Vostok 2416B", "lugWidth":18, "diameter":39, "madeIn":"Russia", "yearMade":"2020", "yearAcquired":"2020", "notes":"Italian rubber strap (brand unknown). Bezel aged using vinegar and a hard-boiled egg.", "img":"images/vostok-amphibia.jpg" },
+{ "make":"Militado", "model":"ML11 - 1921 Tribute", "type":"Dress", "movement":"Automatic", "movementName":"Seagull ST1701K", "lugWidth":20, "diameter":36, "madeIn":"China", "yearMade":"2026", "yearAcquired":"2026", "notes":"First watch was defective; a replacement was sent. Repaired the original, was told to keep it, and gave it to N.", "img":"images/militado.jpg" },
 ];
 
     function populateFilters() {
